@@ -33,90 +33,108 @@ export default function Hero() {
     () => {
       if (!headingRef.current || !heroRef.current) return;
 
-      // --- SplitText Animation ---
-      const split = SplitText.create(headingRef.current, {
-        type: "chars,words",
-      });
+      let split: SplitText | null = null;
 
-      const tl = gsap.timeline({
-        defaults: { ease: "power3.out" },
-      });
+      const runAnimation = () => {
+        if (!headingRef.current) return;
 
-      // Logo fade in
-      tl.from(".navbar__logo", {
-        y: -20,
-        opacity: 0,
-        duration: 0.6,
-      });
+        // --- SplitText Animation ---
+        split = SplitText.create(headingRef.current, {
+          type: "chars,words",
+        });
 
-      // Nav links fade in (desktop)
-      tl.from(
-        ".navbar__link",
-        {
-          y: -15,
+        const tl = gsap.timeline({
+          defaults: { ease: "power3.out" },
+        });
+
+        // Logo fade in
+        tl.from(".navbar__logo", {
+          y: -20,
           opacity: 0,
-          duration: 0.5,
-          stagger: 0.08,
-        },
-        "-=0.3",
-      );
+          duration: 0.6,
+        });
 
-      // Hamburger fade in (mobile)
-      tl.from(
-        ".navbar__hamburger",
-        {
-          y: -15,
-          opacity: 0,
-          duration: 0.5,
-        },
-        "<",
-      );
-
-      // Hero heading chars reveal
-      tl.from(
-        split.chars,
-        {
-          y: 120,
-          opacity: 0,
-          rotateX: -40,
-          duration: 0.8,
-          stagger: {
-            amount: 0.6,
-            from: "start",
-          },
-        },
-        "-=0.2",
-      );
-
-      // Description text
-      if (descriptionRef.current) {
+        // Nav links fade in (desktop)
         tl.from(
-          descriptionRef.current,
+          ".navbar__link",
           {
-            y: 20,
+            y: -15,
             opacity: 0,
-            duration: 0.6,
+            duration: 0.5,
+            stagger: 0.08,
           },
-          "-=0.4",
+          "-=0.3",
         );
-      }
 
-      // Scroll down indicator
-      if (scrollDownRef.current) {
+        // Hamburger fade in (mobile)
         tl.from(
-          scrollDownRef.current,
+          ".navbar__hamburger",
           {
-            y: 20,
+            y: -15,
             opacity: 0,
-            duration: 0.6,
+            duration: 0.5,
           },
-          "-=0.4",
+          "<",
         );
+
+        // Hero heading chars reveal
+        tl.from(
+          split.chars,
+          {
+            y: 120,
+            opacity: 0,
+            rotateX: -40,
+            duration: 0.8,
+            stagger: {
+              amount: 0.6,
+              from: "start",
+            },
+          },
+          "-=0.2",
+        );
+
+        // Description text
+        if (descriptionRef.current) {
+          tl.from(
+            descriptionRef.current,
+            {
+              y: 20,
+              opacity: 0,
+              duration: 0.6,
+            },
+            "-=0.4",
+          );
+        }
+
+        // Scroll down indicator
+        if (scrollDownRef.current) {
+          tl.from(
+            scrollDownRef.current,
+            {
+              y: 20,
+              opacity: 0,
+              duration: 0.6,
+            },
+            "-=0.4",
+          );
+        }
+      };
+
+      const handlePreloaderComplete = () => {
+        runAnimation();
+        window.removeEventListener("preloaderComplete", handlePreloaderComplete);
+      };
+
+      if (sessionStorage.getItem("preloader_shown")) {
+        runAnimation();
+      } else {
+        window.addEventListener("preloaderComplete", handlePreloaderComplete);
       }
 
       // Cleanup
       return () => {
-        split.revert();
+        window.removeEventListener("preloaderComplete", handlePreloaderComplete);
+        if (split) split.revert();
       };
     },
     { dependencies: [] },
