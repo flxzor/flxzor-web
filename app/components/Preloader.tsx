@@ -89,7 +89,7 @@ export default function Preloader() {
       {/* The Blue Progress Bar growing from bottom */}
       <div
         ref={progressRef}
-        className="absolute bottom-0 left-0 w-full bg-[#0055ff] h-0 z-0"
+        className="absolute bottom-0 left-0 w-full bg-(--accent-blue) h-0 z-0"
       />
       
       {/* Percentage Text */}
