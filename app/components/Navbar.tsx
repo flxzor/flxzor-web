@@ -66,8 +66,8 @@ export default function Navbar({ isMenuOpen, onToggleMenu }: NavbarProps) {
           {/* Desktop navigation */}
           <ul className="navbar__links">
             <li>
-              <a href="/project" className="navbar__link" onClick={(e) => handleLinkClick(e, "/project")}>
-                Project
+              <a href="/projects" className="navbar__link" onClick={(e) => handleLinkClick(e, "/projects")}>
+                Projects
               </a>
             </li>
             <li>

@@ -2,8 +2,11 @@ import About from "./sections/About";
 import Hero from "./sections/Hero";
 import Project from "./sections/Project";
 import Contact from "./sections/Contact";
+import { getProjects } from "@/lib/hygraph";
 
-export default function Home() {
+export default async function Home() {
+  const projects = await getProjects();
+
   return (
     <>
       <Hero />
@@ -16,7 +19,7 @@ export default function Home() {
         <About />
       </section>
 
-      <Project />
+      <Project projects={projects} />
 
       <Contact variant="landing" />
     </>
