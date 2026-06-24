@@ -7,6 +7,7 @@ import gsap from "gsap";
 export default function PageLoader() {
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const grayFillRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);
   const logoTextRef = useRef<HTMLSpanElement>(null);
   const pipeRef = useRef<HTMLSpanElement>(null);
@@ -29,10 +30,12 @@ export default function PageLoader() {
 
       const container = containerRef.current;
       const fill = fillRef.current;
-      if (!container || !fill) return;
+      const grayFill = grayFillRef.current;
+      if (!container || !fill || !grayFill) return;
 
       // Reset & show
       gsap.set(container, { display: "flex", yPercent: 0, opacity: 1, pointerEvents: "all" });
+      gsap.set(grayFill, { height: "0%" });
       gsap.set(fill, { height: "0%" });
       gsap.set(logoTextRef.current, { color: "#111", opacity: 0 });
       gsap.set(pipeRef.current, { color: "rgba(0,0,0,0.25)", opacity: 0 });
@@ -54,12 +57,19 @@ export default function PageLoader() {
         },
       });
 
-      // Blue fill from bottom
-      tl.to(fill, {
+      // Gray fill from bottom
+      tl.to(grayFill, {
         height: "100%",
-        duration: 0.8,
+        duration: 0.6,
         ease: "power3.inOut",
       });
+
+      // Blue fill from bottom, slightly overlapping
+      tl.to(fill, {
+        height: "100%",
+        duration: 0.6,
+        ease: "power3.inOut",
+      }, "-=0.3");
 
       // Fade in the logo and dots at the start
       tl.to(
@@ -141,11 +151,11 @@ export default function PageLoader() {
   return (
     <div
       ref={containerRef}
+      className="hidden" // Tailwind class for display: none
       style={{
         position: "fixed",
         inset: 0,
         zIndex: 9998,
-        display: "none",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
@@ -154,7 +164,21 @@ export default function PageLoader() {
         pointerEvents: "none", // ensure it doesn't block clicks while invisible
       }}
     >
-      {/* Blue fill from bottom */}
+      {/* Gray fill from bottom (first wipe) */}
+      <div
+        ref={grayFillRef}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          height: "0%",
+          background: "#e0e0e0",
+          zIndex: 0,
+        }}
+      />
+      
+      {/* Blue fill from bottom (second wipe) */}
       <div
         ref={fillRef}
         style={{

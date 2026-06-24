@@ -12,21 +12,21 @@ export default function NotFound() {
   useEffect(() => {
     document.body.classList.remove("theme-dark");
     
-    // GSAP Reveal Animation
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.2 });
+    // GSAP Reveal Animation (Slide up like Contact page)
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.1 });
 
-    // Fade in the big 404
+    // The giant 404 slides up from the bottom
     tl.fromTo(numberRef.current, 
-      { opacity: 0, scale: 0.8 },
-      { opacity: 0.4, scale: 1, duration: 1.5 }
+      { y: 200, opacity: 0, rotateX: -20 },
+      { y: 0, opacity: 0.4, rotateX: 0, duration: 1.2 }
     );
 
-    // Reveal the text content from bottom up
+    // Reveal the text content from bottom up with a big Y offset
     if (textRef.current) {
       tl.fromTo(textRef.current.children,
-        { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, stagger: 0.15 },
-        "-=1"
+        { y: 100, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.9, stagger: 0.15 },
+        "-=0.9"
       );
     }
 

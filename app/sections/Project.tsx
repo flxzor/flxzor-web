@@ -127,12 +127,12 @@ const Project = () => {
       {/* ── Fixed Curtain Panels ───────────────── */}
       <div
         ref={panelTopRef}
-        className="fixed left-0 w-full h-[50vh] bg-black z-[999] pointer-events-none will-change-transform top-0"
+        className="fixed left-0 w-full h-[50vh] bg-black z-[100] pointer-events-none will-change-transform top-0"
         aria-hidden="true"
       />
       <div
         ref={panelBottomRef}
-        className="fixed left-0 w-full h-[50vh] bg-black z-[999] pointer-events-none will-change-transform top-[50%]"
+        className="fixed left-0 w-full h-[50vh] bg-black z-[100] pointer-events-none will-change-transform top-[50%]"
         aria-hidden="true"
       />
 
