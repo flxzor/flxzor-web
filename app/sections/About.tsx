@@ -115,7 +115,7 @@ const About = () => {
   }, { scope: aboutRef });
 
   return (
-    <div id="about" ref={aboutRef} className='min-h-screen w-full bg-[#f3efe8] relative z-10 flex flex-col overflow-hidden' style={{ paddingTop: '100px', paddingBottom: '120px', paddingLeft: '8vw', paddingRight: '8vw' }}>
+    <div id="about" ref={aboutRef} className='min-h-screen w-full bg-[#bbc9f1] relative z-10 flex flex-col overflow-hidden' style={{ paddingTop: '100px', paddingBottom: '120px', paddingLeft: '8vw', paddingRight: '8vw' }}>
       
       <div className="w-full flex justify-center mb-16 md:mb-20">
         <h2 

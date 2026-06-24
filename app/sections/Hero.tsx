@@ -38,6 +38,9 @@ export default function Hero() {
       const runAnimation = () => {
         if (!headingRef.current) return;
 
+        // Ensure we start with light theme at the top of the page
+        document.body.classList.remove("theme-dark");
+
         // --- SplitText Animation ---
         split = SplitText.create(headingRef.current, {
           type: "chars,words",
@@ -154,7 +157,7 @@ export default function Hero() {
           {/* Heading */}
           <div className="hero__heading-wrapper">
             <h1 ref={headingRef} className="hero__heading">
-              Full-Stack Developer Software Engineer
+              Full&#8209;Stack Developer Software Engineer
             </h1>
           </div>
 

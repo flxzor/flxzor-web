@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState, useEffect } from "react";
+import Link from "next/link";
 
 interface NavbarProps {
   isMenuOpen: boolean;
@@ -42,30 +43,40 @@ export default function Navbar({ isMenuOpen, onToggleMenu }: NavbarProps) {
     onToggleMenu();
   }, [onToggleMenu]);
 
+  const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    if (isMenuOpen) {
+      onToggleMenu();
+    }
+    window.dispatchEvent(
+      new CustomEvent("pageTransitionStart", { detail: { href } })
+    );
+  }, [isMenuOpen, onToggleMenu]);
+
   return (
     <nav className={`navbar ${isScrolled ? "navbar--fixed" : ""} ${isHidden && !isMenuOpen ? "navbar--hidden-up" : ""} ${isMenuOpen ? "navbar--menu-open" : ""}`} id="navbar">
       
       {/* Show default logo and links ONLY when not in the scrolled/sticky state */}
       {!isScrolled && (
         <>
-          <a href="/" className={`navbar__logo ${isMenuOpen ? "navbar__logo--menu-open" : ""}`}>
+          <a href="/" className={`navbar__logo ${isMenuOpen ? "navbar__logo--menu-open" : ""}`} onClick={(e) => handleLinkClick(e, "/")}>
             flxzor
           </a>
 
           {/* Desktop navigation */}
           <ul className="navbar__links">
             <li>
-              <a href="#projects" className="navbar__link">
+              <a href="/project" className="navbar__link" onClick={(e) => handleLinkClick(e, "/project")}>
                 Project
               </a>
             </li>
             <li>
-              <a href="#blog" className="navbar__link">
+              <a href="/blog" className="navbar__link" onClick={(e) => handleLinkClick(e, "/blog")}>
                 Blog
               </a>
             </li>
             <li>
-              <a href="#about" className="navbar__link">
+              <a href="/about" className="navbar__link" onClick={(e) => handleLinkClick(e, "/about")}>
                 About
               </a>
             </li>

@@ -251,7 +251,7 @@ a {
 /* ============================================
    MENU OVERLAY (Full-screen mobile menu)
    ============================================ */
-.menu-overlay {
+.menu-overlay-v2 {
   position: fixed;
   inset: 0;
   z-index: 150;
@@ -263,11 +263,11 @@ a {
   pointer-events: none;
 }
 
-.menu-overlay--open {
+.menu-overlay-v2--open {
   pointer-events: all;
 }
 
-.menu-overlay__nav {
+.menu-overlay-v2__nav {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -275,30 +275,52 @@ a {
   list-style: none;
 }
 
-.menu-overlay__nav li {
+.menu-overlay-v2__nav li {
   overflow: hidden;
   padding-bottom: 0.05em; /* padding for descenders */
 }
 
-.menu-overlay__link {
+.menu-overlay-v2__link {
   display: block;
   font-family: var(--font-display);
   font-size: clamp(2rem, 8vw, 3.5rem);
   font-weight: 900;
   text-transform: uppercase;
-  color: var(--foreground);
+  color: #111;
   letter-spacing: -0.02em;
   cursor: pointer;
   position: relative;
   line-height: 1.2;
-  transition: opacity 0.3s ease;
+  overflow: hidden; /* Required for text replace animation */
 }
 
-.menu-overlay__link:hover {
-  opacity: 0.7;
+/* Base text */
+.menu-overlay-v2__link-inner {
+  display: block;
+  transition: transform 0.6s var(--ease-out-expo);
 }
 
-.menu-overlay__email {
+/* Duplicate text that slides up */
+.menu-overlay-v2__link::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: block;
+  color: #111;
+  transition: transform 0.6s var(--ease-out-expo);
+}
+
+/* Hover Animation */
+.menu-overlay-v2__link:hover .menu-overlay-v2__link-inner {
+  transform: translateY(-100%);
+}
+
+.menu-overlay-v2__link:hover::after {
+  transform: translateY(-100%);
+}
+
+.menu-overlay-v2__email {
   position: absolute;
   bottom: 2rem;
   left: var(--section-padding-x);
@@ -346,18 +368,27 @@ a {
   padding: 1rem var(--section-padding-x) 0;
   position: relative;
   z-index: 1;
-  flex-shrink: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 15vh; /* Centers the text perfectly behind the head */
 }
 
 .hero__heading {
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 15vw, 4.5rem);
+  font-size: clamp(1.9rem, 13vw, 4.5rem);
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.03em;
   text-transform: uppercase;
   color: var(--foreground);
   max-width: 600px;
+  
+  /* Prevent mid-word breaking / hyphenation */
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: none;
 }
 
 .hero__heading .word {
@@ -599,7 +630,523 @@ a {
   border-width: 0;
 }
 
+/* Page Loader Bouncing Dots */
+@keyframes loaderBounce {
+  0%, 80%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-12px) scale(1.15);
+  }
+}
+
+.page-loader-dot {
+  animation: loaderBounce 1.4s ease-in-out infinite;
+}
+
 /* Body lock when menu is open */
 body.menu-open {
   overflow: hidden;
 }
+
+/* ============================================
+   TECH STACK SECTION
+   ============================================ */
+.techstack {
+  position: relative;
+  z-index: 15;
+  width: 100%;
+  min-height: 100vh;
+  background: transparent;
+}
+
+/* ── Curtain Panels ────────────────────────── */
+/* position:fixed so they overlay the ENTIRE viewport,
+   including the About section during the scroll transition.
+   Rendered outside the pinned section to avoid transform
+   containment issues from ScrollTrigger's pin.           */
+.techstack__curtain-panel {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: #000000;
+  z-index: 999;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.techstack__curtain-panel--top {
+  top: 0;
+}
+
+.techstack__curtain-panel--bottom {
+  top: 50%;
+}
+
+/* ── Content Container ─────────────────────── */
+.techstack__content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 80px 6vw 100px;
+  background: transparent;
+}
+
+/* ── Heading Wrapper ───────────────────────── */
+.techstack__heading-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: clamp(3rem, 6vh, 5rem);
+  width: 100%;
+}
+
+.techstack__heading {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 12vw, 13rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  will-change: transform, opacity, filter;
+  user-select: none;
+}
+
+.techstack__heading--solid {
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+  margin-right: 8vw;
+}
+
+/* Outline text layer */
+.techstack__heading--outline {
+  position: relative;
+  z-index: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.4);
+  margin-left: 8vw;
+}
+
+/* ── Tech Grid ─────────────────────────────── */
+.techstack__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  width: 100%;
+  max-width: 1100px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.techstack__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2.5rem 1.5rem;
+  background: #000000;
+  will-change: transform, opacity;
+  transition: background 0.4s ease;
+}
+
+.techstack__item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.techstack__item-icon {
+  width: 40px;
+  height: 40px;
+  color: rgba(255, 255, 255, 0.85);
+  transition: color 0.3s ease;
+}
+
+.techstack__item:hover .techstack__item-icon {
+  color: #ffffff;
+}
+
+.techstack__icon {
+  width: 100%;
+  height: 100%;
+}
+
+.techstack__item-name {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.3s ease;
+}
+
+.techstack__item:hover .techstack__item-name {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* ── Responsive — Tablet (768px+) ──────────── */
+@media (min-width: 768px) {
+  .techstack__content {
+    padding: 100px 8vw 120px;
+  }
+
+  .techstack__heading--outline {
+    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.35);
+  }
+
+  .techstack__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .techstack__item {
+    padding: 3rem 2rem;
+    gap: 1.25rem;
+  }
+
+  .techstack__item-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .techstack__item-name {
+    font-size: 0.85rem;
+  }
+}
+
+/* ── Responsive — Desktop (1200px+) ────────── */
+@media (min-width: 1200px) {
+  .techstack__heading--outline {
+    -webkit-text-stroke: 3px rgba(255, 255, 255, 0.3);
+  }
+
+  .techstack__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .techstack__item {
+    padding: 3.5rem 2rem;
+  }
+
+  .techstack__item-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .techstack__item-name {
+    font-size: 0.875rem;
+    letter-spacing: 0.14em;
+  }
+}
+
+/* ============================================
+   THEME TOGGLE (Dark Mode via Tech Stack)
+   ============================================ */
+body.theme-dark .navbar {
+  background: transparent;
+}
+body.theme-dark .navbar--fixed {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* Only make the navbar items white when the menu is CLOSED */
+body.theme-dark:not(.menu-open) .navbar__logo {
+  color: #ffffff;
+}
+body.theme-dark:not(.menu-open) .navbar__link {
+  color: #ffffff;
+}
+body.theme-dark:not(.menu-open) .navbar__link::after {
+  background: #ffffff;
+}
+body.theme-dark:not(.menu-open) .navbar__hamburger-line {
+  background: #ffffff;
+}
+
+/* ============================================
+   CONTACT SECTION
+   ============================================ */
+.contact {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  min-height: 100vh;
+  background: #f5f0eb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.contact--page {
+  padding-top: calc(var(--nav-height) + 2rem);
+}
+
+.contact__inner {
+  width: 100%;
+  max-width: 900px;
+  padding: 80px var(--section-padding-x) 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Contact Heading ──────────────────────── */
+.contact__heading-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4rem;
+}
+
+.contact__heading {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 18vw, 14rem);
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: #111;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.contact__heading .word {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.contact__heading .char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* ── Contact Form ─────────────────────────── */
+.contact__form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.contact__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.contact__label {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #333;
+}
+
+.contact__label-required {
+  color: #c0392b;
+  margin-left: 2px;
+}
+
+.contact__input,
+.contact__textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid rgba(0, 0, 0, 0.2);
+  padding: 0.85rem 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: #111;
+  outline: none;
+  transition: border-color 0.3s ease;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+.contact__input::placeholder,
+.contact__textarea::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+  font-style: italic;
+}
+
+.contact__input:focus,
+.contact__textarea:focus {
+  border-bottom-color: var(--accent-blue);
+}
+
+.contact__textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+/* ── Submit Button ────────────────────────── */
+.contact__button-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.contact__button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2.5rem;
+  background: #111;
+  color: #f5f0eb;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.3s var(--ease-out-expo);
+}
+
+.contact__button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--accent-blue);
+  transform: translateX(-101%);
+  transition: transform 0.5s var(--ease-out-expo);
+  z-index: 0;
+}
+
+.contact__button:hover::before {
+  transform: translateX(0);
+}
+
+.contact__button:hover {
+  transform: scale(1.02);
+}
+
+.contact__button-text {
+  position: relative;
+  z-index: 1;
+}
+
+.contact__button-arrow {
+  position: relative;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.contact__button:hover .contact__button-arrow {
+  transform: translateX(4px);
+}
+
+/* ── Contact Footer Info ──────────────────── */
+.contact__footer {
+  width: 100%;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.contact__footer-label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.contact__footer-email {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111;
+  transition: color 0.3s ease;
+}
+
+.contact__footer-email:hover {
+  color: var(--accent-blue);
+}
+
+/* ── Responsive — Tablet (768px+) ─────────── */
+@media (min-width: 768px) {
+  .contact__inner {
+    padding: 100px var(--section-padding-x) 120px;
+  }
+
+  .contact__heading {
+    font-size: clamp(6rem, 15vw, 14rem);
+  }
+
+  .contact__form {
+    gap: 3rem;
+  }
+
+  .contact__input,
+  .contact__textarea {
+    font-size: 1.1rem;
+    padding: 1rem 0;
+  }
+
+  .contact__textarea {
+    min-height: 150px;
+  }
+
+  .contact__button {
+    padding: 1.15rem 3rem;
+    font-size: 0.9rem;
+  }
+
+  .contact__footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* ── Responsive — Desktop (1200px+) ──────── */
+@media (min-width: 1200px) {
+  .contact__inner {
+    padding: 120px var(--section-padding-x) 140px;
+  }
+
+  .contact__heading-wrapper {
+    margin-bottom: 5rem;
+  }
+}
+
+/* ── Theme revert: Contact has light bg ───── */
+body.theme-contact .navbar__logo {
+  color: var(--foreground);
+}
+body.theme-contact .navbar__link {
+  color: var(--foreground);
+}
+body.theme-contact .navbar__link::after {
+  background: var(--foreground);
+}
+body.theme-contact .navbar__hamburger-line {
+  background: var(--foreground);
+}
+body.theme-contact .navbar--fixed {
+  background: rgba(245, 240, 235, 0.9);
+}
+
