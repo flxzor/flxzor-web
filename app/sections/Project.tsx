@@ -325,7 +325,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
                     {project.description}
                   </p>
                   <p className="mt-2 text-[clamp(0.65rem,1.1vw,0.75rem)] font-semibold italic text-[#005ab4] line-clamp-1">
-                    {project.tech.join(", ")}
+                    {project.tech?.join(', ')}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2.5 items-center">
                     {project.githubUrl && (

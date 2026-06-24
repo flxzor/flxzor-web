@@ -2,7 +2,7 @@ export interface HygraphProject {
   id: string;
   title: string;
   description: string;
-  tech: string;
+  tech: string[];
   coverImage?: {
     url: string;
   };
