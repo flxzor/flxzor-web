@@ -3,6 +3,7 @@ export interface HygraphProject {
   title: string;
   description: string;
   tech: string[];
+  projectDate?: string;
   coverImage?: {
     url: string;
   };
@@ -11,7 +12,25 @@ export interface HygraphProject {
   isPin?: boolean;
 }
 
-export async function getProjects(): Promise<HygraphProject[]> {
+const PROJECTS_QUERY = `
+  query GetProjects {
+    projects {
+      id
+      title
+      description
+      tech
+      projectDate
+      coverImage {
+        url
+      }
+      demoUrl
+      githubUrl
+      isPin
+    }
+  }
+`;
+
+async function fetchProjectsFromHygraph(): Promise<HygraphProject[]> {
   const endpoint = process.env.HYGRAPH_ENDPOINT;
 
   if (!endpoint) {
@@ -19,32 +38,14 @@ export async function getProjects(): Promise<HygraphProject[]> {
     return [];
   }
 
-  const query = `
-    query GetProjects {
-      projects {
-        id
-        title
-        description
-        tech
-        coverImage {
-          url
-        }
-        demoUrl
-        githubUrl
-        isPin
-      }
-    }
-  `;
-
   try {
     const res = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query }),
-      // Optional: next: { revalidate: 60 } for ISR
-      cache: "no-store", // We use no-store for dynamic fetching, or user can change it
+      body: JSON.stringify({ query: PROJECTS_QUERY }),
+      next: { revalidate: 60 },
     });
 
     const json = await res.json();
@@ -54,10 +55,28 @@ export async function getProjects(): Promise<HygraphProject[]> {
       throw new Error("Failed to fetch projects from Hygraph");
     }
 
-    const pinnedProjects = json.data.projects.filter((p: HygraphProject) => p.isPin).slice(0, 3);
-    return pinnedProjects;
+    return json.data.projects;
   } catch (error) {
     console.error("Error fetching projects:", error);
     return [];
   }
 }
+
+/** Fetch only pinned projects (max 3) — used on the landing page */
+export async function getProjects(): Promise<HygraphProject[]> {
+  const all = await fetchProjectsFromHygraph();
+  return all.filter((p) => p.isPin).slice(0, 3);
+}
+
+/** Fetch all projects — used on the /projects page */
+export async function getAllProjects(): Promise<HygraphProject[]> {
+  const all = await fetchProjectsFromHygraph();
+  
+  // Sort so pinned projects appear first
+  return all.sort((a, b) => {
+    if (a.isPin && !b.isPin) return -1;
+    if (!a.isPin && b.isPin) return 1;
+    return 0;
+  });
+}
+

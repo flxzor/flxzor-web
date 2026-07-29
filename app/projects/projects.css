@@ -1,0 +1,312 @@
+/* ------------------------------------------------------------------ */
+/*  Projects section                                                   */
+/*  Import this file once in your global stylesheet, e.g. from         */
+/*  app/globals.css:  @import "./projects.css";                        */
+/* ------------------------------------------------------------------ */
+
+.projects {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    #ffffff 0%,
+    #ffffff 55%,
+    #1d5fae 100%
+  );
+}
+
+.projects__inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Project counter (top-right)                                         */
+/* ------------------------------------------------------------------ */
+
+.projects__counter {
+  position: absolute;
+  top: 90px;
+  right: 32px;
+  font-family: var(--font-heading, "Arial Black", sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: #0a0a0a;
+  opacity: 0.5;
+  letter-spacing: 0.05em;
+  z-index: 2;
+}
+
+.projects__counter-current {
+  color: #0a0a0a;
+  opacity: 1;
+}
+
+.projects__counter-sep {
+  margin: 0 4px;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Scroll hint (bottom-center)                                         */
+/* ------------------------------------------------------------------ */
+
+.projects__scroll-hint {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.projects__scroll-hint span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #0a0a0a;
+  opacity: 0.45;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.projects__scroll-hint-arrow {
+  color: #0a0a0a;
+  opacity: 0.45;
+  animation: arrowBounce 1.5s ease-in-out infinite;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes arrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+.projects__scroll-hint-arrow--up {
+  animation: arrowBounceUp 1.5s ease-in-out infinite;
+}
+
+@keyframes arrowBounceUp {
+  0%, 100% { transform: rotate(180deg) translateY(0); }
+  50% { transform: rotate(180deg) translateY(5px); }
+}
+
+.projects__scroll-hint--bottom {
+  cursor: pointer;
+}
+
+.projects__scroll-hint--bottom:hover span,
+.projects__scroll-hint--bottom:hover .projects__scroll-hint-arrow {
+  opacity: 0.8;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Each project card = one fixed viewport panel                       */
+/* ------------------------------------------------------------------ */
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 24px 48px;
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ---------------------------- Title -------------------------------- */
+
+.project-card__title {
+  font-family: var(--font-heading, "Arial Black", sans-serif);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  text-align: center;
+  color: #0a0a0a;
+  font-size: clamp(32px, 5vw, 72px);
+  margin: 0 0 24px;
+  flex-shrink: 0;
+}
+
+/* ---------------------------- Body layout --------------------------- */
+
+.project-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .project-card__body {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 40px;
+  }
+}
+
+/* ---------------------------- Media (image + marquee) --------------- */
+
+.project-card__media {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .project-card__media {
+    flex: 0 0 50%;
+    min-height: 0;
+  }
+}
+
+.project-card__image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #d9d9d9;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.project-card__image-img {
+  object-fit: cover;
+}
+
+.project-card__image-placeholder {
+  color: #0a0a0a;
+  opacity: 0.55;
+}
+
+/* ---------------------------- Marquee -------------------------------- */
+
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.marquee__track {
+  display: inline-flex;
+  width: max-content;
+}
+
+.marquee__item {
+  font-size: 14px;
+  color: #0a0a0a;
+  opacity: 0.85;
+}
+
+/* ---------------------------- Content (text + actions) --------------- */
+
+.project-card__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+@media (min-width: 1024px) {
+  .project-card__content {
+    flex: 1;
+    padding-top: 0;
+  }
+}
+
+.project-card__date {
+  font-family: var(--font-heading, "Arial Black", sans-serif);
+  font-weight: 900;
+  font-size: clamp(14px, 1.2vw, 18px);
+  color: #0a0a0a;
+  text-align: right;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.project-card__description {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #0a0a0a;
+  white-space: pre-line;
+  margin: 0;
+}
+
+.project-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.project-card__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  color: #fff;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.project-card__button:hover {
+  opacity: 0.85;
+}
+
+.project-card__button--primary {
+  background: #1a5fb4;
+}
+
+.project-card__button--secondary {
+  background: #0a0a0a;
+}
+
+/* ---------------------------- Index number --------------------------- */
+
+.project-card__number {
+  font-family: var(--font-heading, "Arial Black", sans-serif);
+  font-weight: 900;
+  line-height: 0.8;
+  color: #0a0a0a;
+  font-size: clamp(40px, 8vw, 96px);
+  margin-top: 20px;
+  flex-shrink: 0;
+}
+
+/* ---------------------------- Mobile --------------------------------- */
+
+@media (max-width: 1023px) {
+  .project-card {
+    padding: 70px 16px 24px;
+  }
+
+  .project-card__title {
+    font-size: clamp(28px, 7vw, 48px);
+    margin-bottom: 16px;
+  }
+
+  .project-card__number {
+    margin-top: 12px;
+    font-size: clamp(32px, 10vw, 64px);
+  }
+
+  .projects__counter {
+    top: 74px;
+    right: 16px;
+  }
+}
