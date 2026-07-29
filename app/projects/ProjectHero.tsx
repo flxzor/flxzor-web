@@ -35,9 +35,6 @@ function Marquee({ text, repeat = 6, animate = true }: { text: string; repeat?: 
     },
     { scope: trackRef, dependencies: [animate] },
   );
-  // Ensure we start with light theme at the top of the page
-        document.body.classList.remove("theme-dark");
-
   if (!animate) {
     return (
       <div className="marquee">
@@ -190,6 +187,9 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
   /* ---- Intro animation on first mount ---- */
   useGSAP(
     () => {
+      // Ensure we start with light theme at the top of the page
+      document.body.classList.remove("theme-dark");
+
       if (!cardRef.current) return;
       const els = cardRef.current.children;
       gsap.from(els, {
