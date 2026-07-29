@@ -13,7 +13,7 @@
   /* Typography */
   --font-display: var(--font-geist-sans), "Arial Black", "Impact", sans-serif;
   --font-body: var(--font-geist-sans), system-ui, sans-serif;
-  --font-logo: "Georgia", serif;
+  --font-logo: var(--font-nunito-sans), "Georgia", serif;
 
   /* Spacing */
   --nav-height: 80px;
@@ -113,8 +113,7 @@ a {
 .navbar__logo {
   font-family: var(--font-logo);
   font-size: 1.75rem;
-  font-weight: 700;
-  font-style: italic;
+  font-weight: 800; /* Made slightly bolder to match typical Nunito Sans logo looks */
   letter-spacing: -0.02em;
   color: var(--foreground);
   cursor: pointer;

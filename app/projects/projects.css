@@ -14,10 +14,14 @@
     #ffffff 55%,
     #1d5fae 100%
   );
+  padding-top: 80px; /* Height of the navbar to prevent overlap */
+  box-sizing: border-box;
 }
 
 .projects__inner {
+  position: relative;
   height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,9 +33,9 @@
 
 .projects__counter {
   position: absolute;
-  top: 90px;
+  top: 10px;
   right: 32px;
-  font-family: var(--font-heading, "Arial Black", sans-serif);
+  font-family: var(--font-display);
   font-size: 14px;
   font-weight: 700;
   color: #0a0a0a;
@@ -110,21 +114,27 @@
 /* ------------------------------------------------------------------ */
 
 .project-card {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 80px 24px 48px;
+  padding: 20px 24px 48px;
   max-width: 1180px;
   margin: 0 auto;
   width: 100%;
+  height: 100%;
   box-sizing: border-box;
   overflow: hidden;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* ---------------------------- Title -------------------------------- */
 
 .project-card__title {
-  font-family: var(--font-heading, "Arial Black", sans-serif);
+  font-family: var(--font-display);
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: -0.02em;
@@ -226,7 +236,7 @@
 }
 
 .project-card__date {
-  font-family: var(--font-heading, "Arial Black", sans-serif);
+  font-family: var(--font-display);
   font-weight: 900;
   font-size: clamp(14px, 1.2vw, 18px);
   color: #0a0a0a;
@@ -242,6 +252,20 @@
   color: #0a0a0a;
   white-space: pre-line;
   margin: 0;
+  max-height: calc(1.65em * 5); /* Approx 5 lines max */
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.project-card__description::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+@media (min-width: 1024px) {
+  .project-card__description {
+    max-height: calc(1.65em * 7); /* Approx 7 lines on desktop */
+  }
 }
 
 .project-card__actions {
@@ -278,8 +302,21 @@
 
 /* ---------------------------- Index number --------------------------- */
 
+.project-card__number-wrapper {
+  position: static;
+}
+
+@media (min-width: 1024px) {
+  .project-card__number-wrapper {
+    position: absolute;
+    bottom: 15vh;
+    right: var(--section-padding-x);
+    z-index: 0;
+  }
+}
+
 .project-card__number {
-  font-family: var(--font-heading, "Arial Black", sans-serif);
+  font-family: var(--font-display);
   font-weight: 900;
   line-height: 0.8;
   color: #0a0a0a;
