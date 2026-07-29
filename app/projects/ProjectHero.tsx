@@ -95,7 +95,9 @@ function ImagePlaceholderIcon() {
 function ProjectCardContent({ project, index }: { project: HygraphProject; index: number }) {
   return (
     <>
-      <h2 className="project-card__title">{project.title}</h2>
+      <div className="overflow-hidden">
+        <h2 className="project-card__title">{project.title}</h2>
+      </div>
 
       <div className="project-card__body">
         {/* Left: image + marquee */}
@@ -123,15 +125,19 @@ function ProjectCardContent({ project, index }: { project: HygraphProject; index
 
         {/* Right: description + actions */}
         <div className="project-card__content">
-          {project.projectDate && (
-            <p className="project-card__date">
-              {new Date(project.projectDate).toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              })}
-            </p>
-          )}
-          <p className="project-card__description">{project.description}</p>
+          <div className="overflow-hidden">
+            {project.projectDate && (
+              <p className="project-card__date">
+                {new Date(project.projectDate).toLocaleDateString("en-US", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+            )}
+          </div>
+          <div className="overflow-hidden">
+            <p className="project-card__description">{project.description}</p>
+          </div>
 
           <div className="project-card__actions">
             {project.demoUrl && (
@@ -158,8 +164,10 @@ function ProjectCardContent({ project, index }: { project: HygraphProject; index
         </div>
       </div>
 
-      <div className="project-card__number">
-        {String(index + 1).padStart(2, "0")}
+      <div className="overflow-hidden project-card__number-wrapper">
+        <div className="project-card__number">
+          {String(index + 1).padStart(2, "0")}
+        </div>
       </div>
     </>
   );
@@ -174,7 +182,7 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const isAnimating = useRef(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const handleToggleMenu = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
@@ -190,8 +198,9 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
       // Ensure we start with light theme at the top of the page
       document.body.classList.remove("theme-dark");
 
-      if (!cardRef.current) return;
-      const els = cardRef.current.children;
+      const firstCard = cardsRef.current[0];
+      if (!firstCard) return;
+      const els = firstCard.children;
       gsap.from(els, {
         y: 60,
         opacity: 0,
@@ -200,120 +209,124 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
         stagger: 0.1,
       });
     },
-    { scope: cardRef },
+    { scope: sectionRef }
   );
 
   /* ---- Transition to next/prev project ---- */
   const goTo = useCallback(
     (direction: "next" | "prev" | number) => {
-      if (isAnimating.current) return;
+      if (isAnimating.current || projects.length === 0) return;
 
       let nextIdx = currentIndex;
-      let isForward = true;
-
-      if (typeof direction === "number") {
-        nextIdx = Math.max(0, Math.min(direction, projects.length - 1));
-        isForward = nextIdx > currentIndex;
+      if (direction === "next") {
+        nextIdx = (currentIndex + 1) % projects.length;
+      } else if (direction === "prev") {
+        nextIdx = (currentIndex - 1 + projects.length) % projects.length;
       } else {
-        nextIdx =
-          direction === "next"
-            ? Math.min(currentIndex + 1, projects.length - 1)
-            : Math.max(currentIndex - 1, 0);
-        isForward = direction === "next";
+        nextIdx = direction;
       }
 
       if (nextIdx === currentIndex) return;
 
       isAnimating.current = true;
-      const card = cardRef.current;
-      if (!card) return;
+      const isForward =
+        direction === "next" ||
+        (typeof direction === "number" && direction > currentIndex);
 
-      const slideOut = isForward ? "-110%" : "110%";
-      const slideIn = isForward ? "110%" : "-110%";
+      const currentCard = cardsRef.current[currentIndex];
+      const nextCard = cardsRef.current[nextIdx];
 
-      // Separate text vs non-text elements
-      const textEls = card.querySelectorAll(
+      if (!currentCard || !nextCard) {
+        setCurrentIndex(nextIdx);
+        isAnimating.current = false;
+        return;
+      }
+
+      // Prepare next card
+      gsap.set(nextCard, { visibility: "visible" });
+
+      const slideOut = isForward ? -100 : 100;
+      const slideIn = isForward ? 100 : -100;
+
+      const currTextEls = currentCard.querySelectorAll(
         ".project-card__title, .project-card__date, .project-card__description, .project-card__number"
       );
-      const morphEls = card.querySelectorAll(
+      const nextTextEls = nextCard.querySelectorAll(
+        ".project-card__title, .project-card__date, .project-card__description, .project-card__number"
+      );
+
+      const currMorphEls = currentCard.querySelectorAll(
+        ".project-card__image, .project-card__button, .project-card__marquee"
+      );
+      const nextMorphEls = nextCard.querySelectorAll(
         ".project-card__image, .project-card__button, .project-card__marquee"
       );
 
       const tl = gsap.timeline({
         onComplete: () => {
+          gsap.set(currentCard, { visibility: "hidden" });
           setCurrentIndex(nextIdx);
-
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              if (!cardRef.current) return;
-
-              const newTextEls = cardRef.current.querySelectorAll(
-                ".project-card__title, .project-card__date, .project-card__description, .project-card__number"
-              );
-              const newMorphEls = cardRef.current.querySelectorAll(
-                ".project-card__image, .project-card__button, .project-card__marquee"
-              );
-
-              // Set initial states
-              gsap.set(newTextEls, { y: slideIn, opacity: 0 });
-              gsap.set(newMorphEls, { opacity: 0, scale: 0.92, filter: "blur(6px)" });
-
-              const tlIn = gsap.timeline({
-                onComplete: () => {
-                  isAnimating.current = false;
-                },
-              });
-
-              // Text slides in
-              tlIn.to(newTextEls, {
-                y: "0%",
-                opacity: 1,
-                duration: 0.6,
-                ease: "power3.out",
-                stagger: 0.06,
-              });
-
-              // Image/buttons morph in (scale up + unblur)
-              tlIn.to(
-                newMorphEls,
-                {
-                  opacity: 1,
-                  scale: 1,
-                  filter: "blur(0px)",
-                  duration: 0.65,
-                  ease: "power2.out",
-                  stagger: 0.06,
-                },
-                "-=0.45"
-              );
-            });
-          });
+          isAnimating.current = false;
         },
       });
 
-      // Text slides out
-      tl.to(textEls, {
-        y: slideOut,
-        opacity: 0,
-        duration: 0.5,
-        ease: "power3.in",
-        stagger: 0.04,
-      });
+      // Set initial states for incoming elements
+      gsap.set(nextTextEls, { yPercent: slideIn, opacity: 0 });
+      gsap.set(nextMorphEls, { opacity: 0, scale: 0.92, filter: "blur(6px)" });
 
-      // Image/buttons morph out (scale down + blur)
+      // ANIMATE OUT current text
       tl.to(
-        morphEls,
+        currTextEls,
+        {
+          yPercent: slideOut,
+          opacity: 0,
+          duration: 0.6,
+          ease: "power3.inOut",
+          stagger: 0.04,
+        },
+        0
+      );
+
+      // ANIMATE IN next text simultaneously
+      tl.to(
+        nextTextEls,
+        {
+          yPercent: 0,
+          opacity: 1,
+          duration: 0.6,
+          ease: "power3.inOut",
+          stagger: 0.04,
+        },
+        0
+      );
+
+      // ANIMATE OUT current morph
+      tl.to(
+        currMorphEls,
         {
           opacity: 0,
           scale: 0.92,
           filter: "blur(6px)",
-          duration: 0.45,
-          ease: "power2.in",
+          duration: 0.4,
+          ease: "power2.inOut",
         },
-        "-=0.35"
+        0
+      );
+
+      // ANIMATE IN next morph
+      tl.to(
+        nextMorphEls,
+        {
+          opacity: 1,
+          scale: 1,
+          filter: "blur(0px)",
+          duration: 0.6,
+          ease: "power2.out",
+        },
+        0.1
       );
     },
-    [currentIndex],
+    [currentIndex, projects.length]
   );
 
   /* ---- Wheel listener ---- */
@@ -325,6 +338,18 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
     const threshold = 50;
 
     const handleWheel = (e: WheelEvent) => {
+      const target = e.target as HTMLElement;
+      const desc = target.closest(".project-card__description");
+      
+      // If we're scrolling inside a description that actually has scrollable content,
+      // allow native scroll and do not trigger slide transition.
+      if (desc && desc.scrollHeight > desc.clientHeight) {
+        // Only prevent slide if we are actively scrolling the description
+        // (We could check if it's at the top/bottom boundary, but for simplicity, 
+        // returning early is usually enough for an internal scroll box).
+        return; 
+      }
+
       e.preventDefault();
 
       accumulated += e.deltaY;
@@ -349,12 +374,19 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
     if (!section) return;
 
     let touchStartY = 0;
+    let isInsideScrollableDesc = false;
 
     const handleTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0].clientY;
+      
+      const target = e.target as HTMLElement;
+      const desc = target.closest(".project-card__description");
+      isInsideScrollableDesc = !!(desc && desc.scrollHeight > desc.clientHeight);
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
+      if (isInsideScrollableDesc) return;
+
       const delta = touchStartY - e.changedTouches[0].clientY;
       if (Math.abs(delta) > 50) {
         if (delta > 0) {
@@ -365,13 +397,21 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
       }
     };
 
-    section.addEventListener("touchstart", handleTouchStart, {
-      passive: true,
-    });
+    // Need touchmove to stop propagation if it's inside the scrollable desc,
+    // so the page doesn't try to "pull to refresh" or bounce natively
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isInsideScrollableDesc) {
+        e.preventDefault(); // Prevent native scroll only if we are NOT inside the desc
+      }
+    };
+
+    section.addEventListener("touchstart", handleTouchStart, { passive: true });
+    section.addEventListener("touchmove", handleTouchMove, { passive: false });
     section.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     return () => {
       section.removeEventListener("touchstart", handleTouchStart);
+      section.removeEventListener("touchmove", handleTouchMove);
       section.removeEventListener("touchend", handleTouchEnd);
     };
   }, [goTo]);
@@ -396,9 +436,21 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
         </div>
 
         <div className="projects__inner">
-          <div ref={cardRef} className="project-card" key={currentIndex}>
-            <ProjectCardContent project={project} index={currentIndex} />
-          </div>
+          {projects.map((proj, idx) => (
+            <div
+              key={proj.id || idx}
+              ref={(el) => {
+                cardsRef.current[idx] = el;
+              }}
+              className="project-card"
+              style={{
+                visibility: idx === currentIndex ? "visible" : "hidden",
+                pointerEvents: idx === currentIndex ? "auto" : "none",
+              }}
+            >
+              <ProjectCardContent project={proj} index={idx} />
+            </div>
+          ))}
         </div>
 
         {/* Scroll hint */}
