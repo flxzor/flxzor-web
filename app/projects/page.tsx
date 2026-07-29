@@ -1,10 +1,8 @@
-import React from 'react'
-import ComingSoon from '../components/ComingSoon'
+import { getAllProjects } from "@/lib/hygraph";
+import ProjectHero from "./ProjectHero";
 
-const Projects = () => {
-  return (
-    <ComingSoon />
-  )
+export default async function Projects() {
+  const projects = await getAllProjects();
+
+  return <ProjectHero projects={projects} />;
 }
-
-export default Projects
