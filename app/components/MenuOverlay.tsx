@@ -11,6 +11,7 @@ if (typeof window !== "undefined") {
 interface MenuOverlayProps {
   isOpen: boolean;
   onClose: () => void;
+  lightText?: boolean;
 }
 
 const menuLinks = [
@@ -21,7 +22,7 @@ const menuLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
+export default function MenuOverlay({ isOpen, onClose, lightText = false }: MenuOverlayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const linksRef = useRef<HTMLUListElement>(null);
@@ -111,7 +112,7 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
     <div ref={containerRef}>
     <div
       ref={overlayRef}
-      className={`menu-overlay-v2 ${isOpen ? "menu-overlay-v2--open" : ""}`}
+      className={`menu-overlay-v2 ${isOpen ? "menu-overlay-v2--open" : ""} ${lightText ? "menu-overlay-v2--light-text" : ""}`}
       id="menu-overlay-v2"
       style={{ clipPath: "inset(100% 0% 0% 0%)", pointerEvents: "none" }}
     >

@@ -6,9 +6,10 @@ import Link from "next/link";
 interface NavbarProps {
   isMenuOpen: boolean;
   onToggleMenu: () => void;
+  lightOnTop?: boolean;
 }
 
-export default function Navbar({ isMenuOpen, onToggleMenu }: NavbarProps) {
+export default function Navbar({ isMenuOpen, onToggleMenu, lightOnTop = false }: NavbarProps) {
   const [isHidden, setIsHidden] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -54,14 +55,14 @@ export default function Navbar({ isMenuOpen, onToggleMenu }: NavbarProps) {
   }, [isMenuOpen, onToggleMenu]);
 
   return (
-    <nav className={`navbar ${isScrolled ? "navbar--fixed" : ""} ${isHidden && !isMenuOpen ? "navbar--hidden-up" : ""} ${isMenuOpen ? "navbar--menu-open" : ""}`} id="navbar">
+    <nav className={`navbar ${lightOnTop && !isScrolled ? "navbar--light-top" : ""} ${isScrolled ? "navbar--fixed" : ""} ${isHidden && !isMenuOpen ? "navbar--hidden-up" : ""} ${isMenuOpen ? "navbar--menu-open" : ""}`} id="navbar">
       
       {/* Show default logo and links ONLY when not in the scrolled/sticky state */}
       {!isScrolled && (
         <>
-          <a href="/" className={`navbar__logo ${isMenuOpen ? "navbar__logo--menu-open" : ""}`} onClick={(e) => handleLinkClick(e, "/")}>
+          <Link href="/" className={`navbar__logo ${isMenuOpen ? "navbar__logo--menu-open" : ""}`} onClick={(e) => handleLinkClick(e, "/")}>
             flxzor
-          </a>
+          </Link>
 
           {/* Desktop navigation */}
           <ul className="navbar__links">
