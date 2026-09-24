@@ -160,6 +160,29 @@ a {
   width: 100%;
 }
 
+/* About hero uses the blue surface, then returns to the default dark nav on white. */
+.navbar--light-top:not(.navbar--fixed):not(.navbar--menu-open) .navbar__logo,
+.navbar--light-top:not(.navbar--fixed):not(.navbar--menu-open) .navbar__link,
+.navbar--light-top:not(.navbar--fixed):not(.navbar--menu-open) .navbar__sticky-menu {
+  color: #fff;
+}
+
+.navbar--light-top:not(.navbar--fixed):not(.navbar--menu-open) .navbar__link::after {
+  background: #fff;
+}
+
+.navbar--light-top:not(.navbar--fixed):not(.navbar--menu-open) .navbar__hamburger-line {
+  background: #fff;
+}
+
+.navbar--light-top.navbar--menu-open .navbar__logo {
+  color: #fff;
+}
+
+.navbar--light-top.navbar--menu-open .navbar__hamburger-line {
+  background-color: #fff;
+}
+
 /* Hamburger */
 .navbar__hamburger {
   display: flex;
@@ -317,6 +340,12 @@ a {
 
 .menu-overlay-v2__link:hover::after {
   transform: translateY(-100%);
+}
+
+.menu-overlay-v2--light-text .menu-overlay-v2__link,
+.menu-overlay-v2--light-text .menu-overlay-v2__link::after,
+.menu-overlay-v2--light-text .menu-overlay-v2__email {
+  color: #fff;
 }
 
 .menu-overlay-v2__email {
