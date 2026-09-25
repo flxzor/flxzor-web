@@ -10,6 +10,14 @@ import { HygraphProject } from "@/lib/hygraph";
 
 const caveat = Caveat({ subsets: ["latin"], weight: "700", display: "swap" });
 
+const isMobileViewport = () => {
+  if (typeof window === "undefined") return false;
+
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+  const hasMobileUserAgent = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  return isTouchDevice || hasMobileUserAgent;
+};
+
 if (typeof window !== "undefined") {
   gsap.registerPlugin(useGSAP, ScrollTrigger);
 }
@@ -93,18 +101,18 @@ const Project = ({ projects = [] }: ProjectProps) => {
       gsap.set(buttonRef.current, {
         xPercent: -50,
         yPercent: -50,
-        x: () => (window.innerWidth < 768 ? 0 : 250),
-        y: () => (window.innerWidth < 768 ? 160 : 28),
+        x: () => (isMobileViewport() ? 0 : 250),
+        y: () => (isMobileViewport() ? 168 : 28),
         opacity: 0,
-        rotate: () => (window.innerWidth < 768 ? 0 : -7),
+        rotate: () => (isMobileViewport() ? 0 : -7),
         transformOrigin: "center center",
       });
       gsap.set(cards, {
         xPercent: -50,
         yPercent: -50,
         y: (index) => 150 + index * 34,
-        x: (index) => (window.innerWidth < 768 ? 0 : (index - 1) * 26),
-        rotate: (index) => (window.innerWidth < 768 ? 0 : (index - 1) * 5),
+        x: (index) => (isMobileViewport() ? 0 : (index - 1) * 32),
+        rotate: (index) => (isMobileViewport() ? 0 : (index - 1) * 6),
         scale: (index) => 1 - index * 0.035,
         opacity: 0,
         transformOrigin: "center center",
@@ -129,11 +137,11 @@ const Project = ({ projects = [] }: ProjectProps) => {
         .to(panelBottomRef.current, { xPercent: 0, duration: 1, ease: "none" }, 0);
 
       const getCardStack = (index: number) => {
-        const isMobile = window.innerWidth < 768;
+        const isMobile = isMobileViewport();
         return {
-          x: isMobile ? 0 : (index - 1) * 22,
+          x: isMobile ? 0 : (index - 1) * 30,
           y: isMobile ? index * -15 : index * -23,
-          rotate: isMobile ? 0 : (index - 1) * -4.5,
+          rotate: isMobile ? 0 : (index - 1) * -6,
           scale: 1 - index * 0.035,
         };
       };
@@ -157,14 +165,25 @@ const Project = ({ projects = [] }: ProjectProps) => {
         .to(
           headingGroupRef.current,
           {
-            y: () => (window.innerWidth < 768 ? -54 : -24),
-            scale: () => (window.innerWidth < 768 ? 0.62 : 0.58),
+            y: () => (isMobileViewport() ? -54 : -24),
+            scale: () => (isMobileViewport() ? 0.62 : 0.58),
             duration: 1.1,
             ease: "power3.inOut",
           },
           3.35
         )
         .to(captionRef.current, { y: 0, opacity: 1, duration: 0.85, ease: "power3.out" }, 3.92)
+        .to(
+          captionRef.current,
+          {
+            y: () => (isMobileViewport() ? 0 : -46),
+            scale: () => (isMobileViewport() ? 1 : 0.76),
+            duration: 0.7,
+            ease: "power2.out",
+            transformOrigin: "center center",
+          },
+          4.12
+        )
         .to(cardsRef.current, { y: 0, opacity: 1, scale: 1, duration: 0.95, ease: "power3.out" }, 4.25)
         .add(() => undefined, 4.35);
 
@@ -191,16 +210,16 @@ const Project = ({ projects = [] }: ProjectProps) => {
             cards.slice(0, index),
             {
               x: (cardIndex) => {
-                const isMobile = window.innerWidth < 768;
-                return isMobile ? 0 : getCardStack(cardIndex).x - (index - cardIndex) * 7;
+                const isMobile = isMobileViewport();
+                return isMobile ? 0 : getCardStack(cardIndex).x - (index - cardIndex) * 9;
               },
               y: (cardIndex) => {
-                const isMobile = window.innerWidth < 768;
+                const isMobile = isMobileViewport();
                 return isMobile ? cardIndex * -15 - (index - cardIndex) * 5 : getCardStack(cardIndex).y - (index - cardIndex) * 8;
               },
               rotate: (cardIndex) => {
-                const isMobile = window.innerWidth < 768;
-                return isMobile ? 0 : getCardStack(cardIndex).rotate - (index - cardIndex) * 0.8;
+                const isMobile = isMobileViewport();
+                return isMobile ? 0 : getCardStack(cardIndex).rotate - (index - cardIndex) * 1.2;
               },
               duration: 0.55,
               ease: "power2.out",
@@ -215,10 +234,10 @@ const Project = ({ projects = [] }: ProjectProps) => {
           {
             xPercent: -50,
             yPercent: -50,
-            x: () => (window.innerWidth < 768 ? 0 : 250),
-            y: () => (window.innerWidth < 768 ? 160 : 116),
+            x: () => (isMobileViewport() ? 0 : 250),
+            y: () => (isMobileViewport() ? 168 : 116),
             opacity: 1,
-            rotate: () => (window.innerWidth < 768 ? 0 : -7),
+            rotate: () => (isMobileViewport() ? 0 : -7),
             duration: 0.7,
             ease: "back.out(1.6)",
           },
@@ -271,11 +290,11 @@ const Project = ({ projects = [] }: ProjectProps) => {
 
           <div
             ref={captionRef}
-            className={`${caveat.className} mt-[-36px] flex items-end gap-2 text-center text-[clamp(1.8rem,5.3vw,3.4rem)] leading-none text-white sm:mt-[-46px] lg:mt-[-56px]`}
+            className={`${caveat.className} relative z-30 mt-[-20px] mb-20 flex items-end gap-1.5 text-center text-[clamp(1.8rem,5.3vw,3.4rem)] leading-none text-white sm:mt-[-36px] sm:mb-28 lg:mt-[-44px]`}
           >
             <span>See What I&apos;ve Built</span>
             <svg
-              className="mb-[-26px] h-16 w-14 rotate-[-10deg] sm:h-20 sm:w-16"
+              className="mb-[-20px] h-12 w-10 rotate-[-10deg] sm:mb-[-26px] sm:h-20 sm:w-16"
               viewBox="0 0 64 86"
               fill="none"
               aria-hidden="true"
@@ -296,44 +315,67 @@ const Project = ({ projects = [] }: ProjectProps) => {
             </svg>
           </div>
 
-          <div ref={cardsRef} className="relative mt-8 h-[220px] w-full max-w-[720px] sm:mt-10 sm:h-[280px]">
+          <div ref={cardsRef} className="relative mt-0 h-[270px] w-full max-w-[760px] sm:h-[280px]">
             {projects.map((project, index) => (
               <div
                 key={project.id || index}
                 ref={(node) => {
                   cardRefs.current[index] = node;
                 }}
-                className="absolute left-1/2 top-1/2 grid w-[min(88vw,620px)] grid-cols-[42%_1fr] items-center gap-5 border border-black/10 bg-white p-5 text-black shadow-[0_18px_45px_rgba(0,0,0,0.28)] transition-shadow duration-300 hover:shadow-[0_22px_60px_rgba(0,0,0,0.34)] sm:gap-8 sm:p-8"
+                className="absolute left-1/2 top-1/2 grid w-[min(90vw,760px)] grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-2 rounded-md border border-[#087bd0] bg-[#0e1118] p-2 text-white shadow-[0_18px_55px_rgba(0,0,0,0.5)] transition-shadow duration-300 hover:shadow-[0_22px_65px_rgba(0,0,0,0.65)] sm:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] sm:gap-5 sm:p-4"
                 style={{ zIndex: index + 1 }}
               >
-                <div className="relative aspect-[1.45/1] w-full bg-neutral-300 overflow-hidden" aria-hidden="true">
-                  {project.coverImage?.url && (
-                    <Image
-                      src={project.coverImage.url}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 40vw, 250px"
-                    />
-                  )}
+                <div className="min-w-0">
+                  <div className="mb-1 flex h-5 items-center gap-1 rounded-t border border-white/15 bg-[#171a21] px-1.5 text-[7px] font-mono text-white/45 sm:mb-3 sm:h-7 sm:gap-2 sm:px-3 sm:text-[9px]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#f04452] sm:h-2 sm:w-2" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#f0b429] sm:h-2 sm:w-2" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#12b981] sm:h-2 sm:w-2" />
+                    <span className="ml-auto max-w-[65%] truncate">{project.demoUrl?.replace(/^https?:\/\//, "") || project.title}</span>
+                    <span className="ml-auto text-[#37a6ff]">HTTPS</span>
+                  </div>
+                  <div className="relative aspect-[1.12/1] w-full overflow-hidden rounded-sm border border-[#5552a5] bg-[#171923] p-0.5 sm:aspect-[1.55/1] sm:p-1">
+                    <div className="relative h-full w-full overflow-hidden bg-[#090b10]">
+                      {project.coverImage?.url && (
+                        <Image
+                          src={project.coverImage.url}
+                          alt={project.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 640px) 90vw, 55vw"
+                        />
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="min-w-0 flex flex-col justify-center h-full">
-                  <h3 className="text-[clamp(0.9rem,1.6vw,1.2rem)] font-black leading-tight text-black line-clamp-2">
+                <div
+                  className="flex h-full min-w-0 flex-col justify-center py-2"
+                  style={{ paddingLeft: "16px", paddingRight: "16px" }}
+                >
+                  <div className="mb-1 flex items-center justify-between gap-1 font-mono text-[6px] uppercase tracking-wider text-white/50 sm:mb-4 sm:gap-2 sm:text-[9px]">
+                    <span className="text-[#39a9ff]">FEATURED PROJECT / {String(index + 1).padStart(2, "0")}</span>
+                    {project.projectDate && <span>{project.projectDate}</span>}
+                  </div>
+                  <h3 className="text-[clamp(0.78rem,3.8vw,2.65rem)] font-black leading-[0.95] tracking-tight text-white line-clamp-2 sm:text-[clamp(1.35rem,3.8vw,2.65rem)]">
                     {project.title}
                   </h3>
-                  <p className="mt-1.5 text-[clamp(0.65rem,1.2vw,0.85rem)] leading-snug text-black/75 line-clamp-3">
+                  <p className="mt-1 text-[9px] leading-snug text-white/75 line-clamp-2 sm:mt-3 sm:text-[clamp(0.68rem,1.2vw,0.88rem)] sm:leading-relaxed sm:line-clamp-3">
                     {project.description}
                   </p>
-                  <p className="mt-2 text-[clamp(0.65rem,1.1vw,0.75rem)] font-semibold italic text-[#005ab4] line-clamp-1">
-                    {project.tech?.join(', ')}
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-2.5 items-center">
+                  <div className="mt-1.5 sm:mt-5">
+                    <p className="mb-1 hidden font-mono text-[8px] uppercase tracking-widest text-white/45 sm:block">Technology Stack</p>
+                    <div className="flex flex-wrap gap-1 sm:gap-1.5">
+                      {project.tech?.slice(0, 4).map((tech) => (
+                        <span key={tech} className="rounded-sm border border-[#277b61]/40 bg-[#153a31] px-1 py-0.5 font-mono text-[6px] text-[#77e2b6] sm:px-2 sm:py-1 sm:text-[9px]">{tech}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-1 sm:mt-6 sm:gap-3">
                     {project.githubUrl && (
                       <a
                         href={project.githubUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-md bg-[#111] px-3.5 py-1.5 text-[clamp(0.65rem,1.1vw,0.75rem)] font-bold !text-white transition-colors hover:bg-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        className="inline-flex h-11 w-auto min-w-[132px] flex-none items-center justify-center gap-2 border border-white/20 bg-black px-4 text-[11px] font-bold uppercase tracking-wide !text-white transition-colors hover:border-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-white max-sm:h-7 max-sm:w-[72px] max-sm:min-w-0 max-sm:gap-1 max-sm:px-2 max-sm:text-[6px]"
                       >
                         <svg viewBox="0 0 24 24" fill="currentColor" className="h-[1.1em] w-[1.1em] !text-white">
                           <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
@@ -346,7 +388,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
                         href={project.demoUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center text-[clamp(0.65rem,1.1vw,0.75rem)] font-bold text-black hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
+                        className="inline-flex h-11 w-auto min-w-[132px] flex-none items-center justify-center gap-2 bg-[#087bd0] px-4 text-[11px] font-bold uppercase tracking-wide !text-white transition-colors hover:bg-[#1595ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-white max-sm:h-7 max-sm:w-[72px] max-sm:min-w-0 max-sm:gap-1 max-sm:px-2 max-sm:text-[6px]"
                       >
                         Visit Demo <span className="ml-1">-&gt;</span>
                       </a>
@@ -358,11 +400,11 @@ const Project = ({ projects = [] }: ProjectProps) => {
 
             <div
               ref={buttonRef}
-              className="absolute left-1/2 top-1/2 z-20 will-change-transform"
+              className="absolute left-1/2 top-1/2 z-20 w-max max-w-[90vw] will-change-transform"
             >
               <a
                 href="/projects"
-                className="group relative inline-flex items-center gap-3 overflow-hidden bg-[#111] px-6 py-4 text-[#f5f0eb] focus:outline-none focus-visible:ring-2 focus-visible:ring-white sm:px-10 sm:py-[1.15rem]"
+                className="group relative inline-flex min-h-[48px] max-w-full items-center justify-center gap-3 overflow-hidden bg-[#111] px-7 py-4 text-[0.72rem] tracking-[0.08em] text-[#f5f0eb] focus:outline-none focus-visible:ring-2 focus-visible:ring-white sm:min-h-[58px] sm:gap-4 sm:px-12 sm:py-5 sm:text-[0.85rem] sm:tracking-[0.14em]"
                 onClick={(e) => {
                   e.preventDefault();
                   window.dispatchEvent(
@@ -382,10 +424,11 @@ const Project = ({ projects = [] }: ProjectProps) => {
                 style={{
                   color: "#f5f0eb",
                   fontFamily: "var(--font-body)",
-                  fontSize: "0.85rem",
                   fontWeight: 600,
-                  letterSpacing: "0.14em",
                   textTransform: "uppercase",
+                  minWidth: "170px",
+                  paddingLeft: "28px",
+                  paddingRight: "28px",
                   border: "none",
                   transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, color 0.3s ease",
                 }}
