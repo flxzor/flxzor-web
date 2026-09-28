@@ -124,7 +124,7 @@
 .skill span:last-child { color: #88939f; font-size: 17px; transition: transform .2s; }
 .skill:hover span:last-child { transform: translate(3px,-3px); }
 
-.cta { position: relative; z-index: 5; padding: 96px clamp(24px, 8vw, 128px); box-shadow: 0 -18px 48px rgba(10, 10, 10, .16); background: var(--blue); color: white; }
+.cta { position: relative; z-index: 5; min-height: 100svh; display: flex; align-items: center; padding: 96px clamp(24px, 8vw, 128px); box-shadow: 0 -18px 48px rgba(10, 10, 10, .16); background: var(--blue); color: white; }
 .ctaInner { position: relative; max-width: 1100px; margin: auto; padding: 30px 0 25px; }
 .ctaTitle { margin: 28px 0 15px; font: 900 clamp(4rem, 11vw, 10rem)/.78 var(--font-display); letter-spacing: -.075em; text-transform: uppercase; }
 .ctaTitleLine { display: block; width: fit-content; overflow: hidden; padding: 0 .06em .08em 0; transform-origin: left bottom; will-change: transform, opacity; }

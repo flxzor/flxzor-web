@@ -44,7 +44,11 @@ const skills = ["Frontend development", "UI engineering", "Backend systems", "Pr
 export default function About() {
   const pageRef = useRef<HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const handleToggleMenu = useCallback(() => setIsMenuOpen((open) => !open), []);
+  const [menuLightText, setMenuLightText] = useState(false);
+  const handleToggleMenu = useCallback((lightText = false) => {
+    setIsMenuOpen((open) => !open);
+    setMenuLightText(lightText);
+  }, []);
   const handleCloseMenu = useCallback(() => setIsMenuOpen(false), []);
 
   useGSAP(
@@ -255,7 +259,7 @@ export default function About() {
   return (
     <main ref={pageRef} className={styles.page}>
       <Navbar isMenuOpen={isMenuOpen} onToggleMenu={handleToggleMenu} lightOnTop />
-      <MenuOverlay isOpen={isMenuOpen} onClose={handleCloseMenu} lightText />
+      <MenuOverlay isOpen={isMenuOpen} onClose={handleCloseMenu} lightText={menuLightText} />
       <section className={styles.hero} aria-labelledby="about-title">
         <div className={styles.heroInner}>
           <div className={styles.heroCopy}>

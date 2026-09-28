@@ -171,16 +171,13 @@ a {
   background: #fff;
 }
 
-.navbar--light-top:not(.navbar--fixed):not(.navbar--menu-open) .navbar__hamburger-line {
+.navbar--light-top:not(.navbar--fixed):not(.navbar--menu-open) .navbar__hamburger-line,
+.navbar--light-top.navbar--menu-open .navbar__hamburger-line {
   background: #fff;
 }
 
 .navbar--light-top.navbar--menu-open .navbar__logo {
   color: #fff;
-}
-
-.navbar--light-top.navbar--menu-open .navbar__hamburger-line {
-  background-color: #fff;
 }
 
 /* Hamburger */

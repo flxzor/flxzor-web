@@ -5,7 +5,7 @@ import Link from "next/link";
 
 interface NavbarProps {
   isMenuOpen: boolean;
-  onToggleMenu: () => void;
+  onToggleMenu: (lightText?: boolean) => void;
   lightOnTop?: boolean;
 }
 
@@ -41,8 +41,8 @@ export default function Navbar({ isMenuOpen, onToggleMenu, lightOnTop = false }:
   }, []);
 
   const handleToggle = useCallback(() => {
-    onToggleMenu();
-  }, [onToggleMenu]);
+    onToggleMenu(lightOnTop && !isScrolled);
+  }, [lightOnTop, isScrolled, onToggleMenu]);
 
   const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -101,7 +101,7 @@ export default function Navbar({ isMenuOpen, onToggleMenu, lightOnTop = false }:
       {isScrolled && (
         <button
           className="navbar__sticky-menu"
-          onClick={handleToggle}
+          onClick={() => onToggleMenu(false)}
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMenuOpen}
         >
