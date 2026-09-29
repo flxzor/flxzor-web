@@ -374,7 +374,24 @@ export default function About() {
             <span className={`${styles.ctaTitleLine} ${styles.ctaTitleAccent}`}>good things.</span>
           </h2>
           <p className={`${styles.ctaText} ${styles.reveal}`}>I’m always up for a thoughtful conversation or a new challenge.</p>
-          <Link className={`${styles.ctaButton} ${styles.reveal}`} href="/contact">
+          <Link
+            className={`${styles.ctaButton} ${styles.reveal}`}
+            href="/contact"
+            onClick={(event) => {
+              if (
+                event.button !== 0 ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+              ) return;
+
+              event.preventDefault();
+              window.dispatchEvent(
+                new CustomEvent("pageTransitionStart", { detail: { href: "/contact" } })
+              );
+            }}
+          >
             <span className={styles.ctaButtonText}>Say hello</span>
             <span className={styles.waveHand} aria-hidden="true" />
           </Link>

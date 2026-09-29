@@ -500,11 +500,56 @@ a {
   font-family: var(--font-body);
   font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #000;
   white-space: nowrap;
   display: none;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.45;
+}
+
+.hero__scroll-down-arrow {
+  flex: none;
+  animation: heroArrowBounce 1.5s ease-in-out infinite;
+}
+
+.contact-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.contact-celebration span {
+  position: absolute;
+  top: -16px;
+  width: 9px;
+  height: 15px;
+  border-radius: 2px;
+  animation: contactConfettiFall 2.8s ease-in forwards;
+}
+
+.contact-celebration span:nth-child(even) {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation-name: contactConfettiDrift;
+}
+
+@keyframes contactConfettiFall {
+  to { transform: translate3d(45px, 110vh, 0) rotate(720deg); }
+}
+
+@keyframes contactConfettiDrift {
+  to { transform: translate3d(-45px, 110vh, 0) rotate(-720deg); }
+}
+
+@keyframes heroArrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
 }
 
 /* SVG Decoration */
@@ -594,7 +639,7 @@ a {
   }
 
   .hero__scroll-down {
-    display: block;
+    display: flex;
   }
 
   .hero__svg-decoration--top {

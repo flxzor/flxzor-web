@@ -4,8 +4,26 @@ import { useRef, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import gsap from "gsap";
 
+function resetScrollPosition() {
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+}
+
+type ConfettiPiece = {
+  left: string;
+  width: string;
+  height: string;
+  delay: string;
+  duration: string;
+  color: string;
+  animationName: string;
+  round: boolean;
+};
+
 export default function PageLoader() {
   const [mounted, setMounted] = useState(false);
+  const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const grayFillRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);
@@ -18,6 +36,7 @@ export default function PageLoader() {
   const isAnimating = useRef(false);
   const targetHref = useRef<string | null>(null);
   const safetyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const celebrationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Listen for pageTransitionStart event
   useEffect(() => {
@@ -48,7 +67,9 @@ export default function PageLoader() {
 
       const tl = gsap.timeline({
         onComplete: () => {
-          router.push(href);
+          // Reset scroll while the transition covers the page before navigating.
+          resetScrollPosition();
+          router.push(href, { scroll: false });
 
           // Safety timeout: force reveal after 4s if pathname didn't change
           safetyTimer.current = setTimeout(() => {
@@ -115,6 +136,9 @@ export default function PageLoader() {
     if (!isAnimating.current || !targetHref.current) return;
     if (pathname !== targetHref.current) return;
 
+    // The new route can render before the browser applies the previous scroll state.
+    resetScrollPosition();
+
     // Clear safety timer
     if (safetyTimer.current) {
       clearTimeout(safetyTimer.current);
@@ -127,6 +151,10 @@ export default function PageLoader() {
 
   useEffect(() => {
     setMounted(true);
+    return () => {
+      if (safetyTimer.current) clearTimeout(safetyTimer.current);
+      if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
+    };
   }, []);
 
   const revealPage = () => {
@@ -137,10 +165,32 @@ export default function PageLoader() {
       duration: 0.9,
       ease: "power4.inOut",
       onComplete: () => {
+        const arrivedAtContact = targetHref.current === "/contact";
         isAnimating.current = false;
         targetHref.current = null;
         if (containerRef.current) {
           gsap.set(containerRef.current, { display: "none", yPercent: 0 });
+        }
+
+        if (arrivedAtContact) {
+          const colors = ["#2167AB", "#f4bd50", "#f07c70", "#74b88a", "#d998d3", "#ffffff"];
+          setConfetti(
+            Array.from({ length: 150 }, () => ({
+              left: `${Math.random() * 100}%`,
+              width: `${5 + Math.random() * 8}px`,
+              height: `${7 + Math.random() * 13}px`,
+              delay: `${Math.random() * 0.45}s`,
+              duration: `${2.2 + Math.random() * 1.2}s`,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              animationName: Math.random() > 0.5 ? "contactConfettiFall" : "contactConfettiDrift",
+              round: Math.random() > 0.72,
+            }))
+          );
+          if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
+          celebrationTimer.current = setTimeout(() => {
+            setConfetti([]);
+            celebrationTimer.current = null;
+          }, 4100);
         }
       },
     });
@@ -149,21 +199,41 @@ export default function PageLoader() {
   if (!mounted) return null;
 
   return (
-    <div
-      ref={containerRef}
-      className="hidden" // Tailwind class for display: none
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 9998,
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "transparent",
-        overflow: "hidden",
-        pointerEvents: "none", // ensure it doesn't block clicks while invisible
-      }}
-    >
+    <>
+      {confetti.length > 0 && (
+        <div className="contact-celebration" aria-hidden="true">
+          {confetti.map((piece, index) => (
+            <span
+              key={index}
+              style={{
+                left: piece.left,
+                width: piece.width,
+                height: piece.height,
+                animationDelay: piece.delay,
+                animationDuration: piece.duration,
+                animationName: piece.animationName,
+                backgroundColor: piece.color,
+                borderRadius: piece.round ? "50%" : "2px",
+              }}
+            />
+          ))}
+        </div>
+      )}
+      <div
+        ref={containerRef}
+        className="hidden" // Tailwind class for display: none
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 9998,
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "transparent",
+          overflow: "hidden",
+          pointerEvents: "none", // ensure it doesn't block clicks while invisible
+        }}
+      >
       {/* Gray fill from bottom (first wipe) */}
       <div
         ref={grayFillRef}
@@ -251,6 +321,7 @@ export default function PageLoader() {
           ))}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
