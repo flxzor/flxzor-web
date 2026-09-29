@@ -219,9 +219,11 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
 
       let nextIdx = currentIndex;
       if (direction === "next") {
-        nextIdx = (currentIndex + 1) % projects.length;
+        if (currentIndex >= projects.length - 1) return;
+        nextIdx = currentIndex + 1;
       } else if (direction === "prev") {
-        nextIdx = (currentIndex - 1 + projects.length) % projects.length;
+        if (currentIndex <= 0) return;
+        nextIdx = currentIndex - 1;
       } else {
         nextIdx = direction;
       }
@@ -342,12 +344,18 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
       const desc = target.closest(".project-card__description");
       
       // If we're scrolling inside a description that actually has scrollable content,
-      // allow native scroll and do not trigger slide transition.
+      // allow native scroll except at its edges, where preventing default avoids
+      // the gesture chaining into the page behind the fixed project viewport.
       if (desc && desc.scrollHeight > desc.clientHeight) {
-        // Only prevent slide if we are actively scrolling the description
-        // (We could check if it's at the top/bottom boundary, but for simplicity, 
-        // returning early is usually enough for an internal scroll box).
-        return; 
+        const atTop = desc.scrollTop <= 0;
+        const atBottom = desc.scrollTop + desc.clientHeight >= desc.scrollHeight - 1;
+        const canScrollInDirection = e.deltaY > 0 ? !atBottom : e.deltaY < 0 ? !atTop : true;
+
+        if (canScrollInDirection) return;
+
+        e.preventDefault();
+        accumulated = 0;
+        return;
       }
 
       e.preventDefault();
@@ -402,6 +410,19 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
     const handleTouchMove = (e: TouchEvent) => {
       if (!isInsideScrollableDesc) {
         e.preventDefault(); // Prevent native scroll only if we are NOT inside the desc
+        return;
+      }
+
+      const desc = (e.target as HTMLElement).closest(".project-card__description");
+      if (desc) {
+        const movingDown = touchStartY > e.touches[0].clientY;
+        const movingUp = touchStartY < e.touches[0].clientY;
+        const atTop = desc.scrollTop <= 0;
+        const atBottom = desc.scrollTop + desc.clientHeight >= desc.scrollHeight - 1;
+
+        if ((movingDown && atBottom) || (movingUp && atTop)) {
+          e.preventDefault();
+        }
       }
     };
 
