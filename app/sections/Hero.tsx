@@ -189,7 +189,22 @@ export default function Hero() {
             ref={scrollDownRef}
             className="z-0 hero__scroll-down text-black"
           >
-            ( Scroll Down )
+            <span>SCROLL DOWN</span>
+            <svg
+              className="hero__scroll-down-arrow"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 5v14" />
+              <path d="m19 12-7 7-7-7" />
+            </svg>
           </span>
         </div>
       </section>
