@@ -180,6 +180,7 @@ function ProjectCardContent({ project, index }: { project: HygraphProject; index
 export default function ProjectsSection({ projects }: ProjectHeroProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const indexRef = useRef(0);
   const isAnimating = useRef(false);
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -217,26 +218,30 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
     (direction: "next" | "prev" | number) => {
       if (isAnimating.current || projects.length === 0) return;
 
-      let nextIdx = currentIndex;
+      const cur = indexRef.current;
+      let nextIdx = cur;
       if (direction === "next") {
-        nextIdx = (currentIndex + 1) % projects.length;
+        if (cur >= projects.length - 1) return;
+        nextIdx = cur + 1;
       } else if (direction === "prev") {
-        nextIdx = (currentIndex - 1 + projects.length) % projects.length;
+        if (cur <= 0) return;
+        nextIdx = cur - 1;
       } else {
         nextIdx = direction;
       }
 
-      if (nextIdx === currentIndex) return;
+      if (nextIdx === cur) return;
 
       isAnimating.current = true;
       const isForward =
         direction === "next" ||
-        (typeof direction === "number" && direction > currentIndex);
+        (typeof direction === "number" && direction > cur);
 
-      const currentCard = cardsRef.current[currentIndex];
+      const currentCard = cardsRef.current[cur];
       const nextCard = cardsRef.current[nextIdx];
 
       if (!currentCard || !nextCard) {
+        indexRef.current = nextIdx;
         setCurrentIndex(nextIdx);
         isAnimating.current = false;
         return;
@@ -262,9 +267,13 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
         ".project-card__image, .project-card__button, .project-card__marquee"
       );
 
+      // Update ref immediately so subsequent goTo calls see the new index
+      indexRef.current = nextIdx;
+
       const tl = gsap.timeline({
         onComplete: () => {
           gsap.set(currentCard, { visibility: "hidden" });
+          // Sync React state after GSAP is fully done
           setCurrentIndex(nextIdx);
           isAnimating.current = false;
         },
@@ -326,7 +335,7 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
         0.1
       );
     },
-    [currentIndex, projects.length]
+    [projects.length]
   );
 
   /* ---- Wheel listener ---- */
@@ -342,12 +351,18 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
       const desc = target.closest(".project-card__description");
       
       // If we're scrolling inside a description that actually has scrollable content,
-      // allow native scroll and do not trigger slide transition.
+      // allow native scroll except at its edges, where preventing default avoids
+      // the gesture chaining into the page behind the fixed project viewport.
       if (desc && desc.scrollHeight > desc.clientHeight) {
-        // Only prevent slide if we are actively scrolling the description
-        // (We could check if it's at the top/bottom boundary, but for simplicity, 
-        // returning early is usually enough for an internal scroll box).
-        return; 
+        const atTop = desc.scrollTop <= 0;
+        const atBottom = desc.scrollTop + desc.clientHeight >= desc.scrollHeight - 1;
+        const canScrollInDirection = e.deltaY > 0 ? !atBottom : e.deltaY < 0 ? !atTop : true;
+
+        if (canScrollInDirection) return;
+
+        e.preventDefault();
+        accumulated = 0;
+        return;
       }
 
       e.preventDefault();
@@ -402,6 +417,19 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
     const handleTouchMove = (e: TouchEvent) => {
       if (!isInsideScrollableDesc) {
         e.preventDefault(); // Prevent native scroll only if we are NOT inside the desc
+        return;
+      }
+
+      const desc = (e.target as HTMLElement).closest(".project-card__description");
+      if (desc) {
+        const movingDown = touchStartY > e.touches[0].clientY;
+        const movingUp = touchStartY < e.touches[0].clientY;
+        const atTop = desc.scrollTop <= 0;
+        const atBottom = desc.scrollTop + desc.clientHeight >= desc.scrollHeight - 1;
+
+        if ((movingDown && atBottom) || (movingUp && atTop)) {
+          e.preventDefault();
+        }
       }
     };
 
