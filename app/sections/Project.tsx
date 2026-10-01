@@ -61,7 +61,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
 
       const cards = cardRefs.current.filter(Boolean) as HTMLDivElement[];
       const aboutEl = document.querySelector("#about");
-      const contactEl = document.querySelector("#contact") as HTMLElement | null;
+      const testimonialsEl = document.querySelector("#testimonials") as HTMLElement | null;
 
       ScrollTrigger.create({
         trigger: sectionRef.current,
@@ -121,9 +121,9 @@ const Project = ({ projects = [] }: ProjectProps) => {
         transformOrigin: "center center",
       });
 
-      if (contactEl) {
-        // Use negative margin to slide Contact over Project while Project is finishing its pin.
-        gsap.set(contactEl, { marginTop: "-100vh", position: "relative", zIndex: 80 });
+      if (testimonialsEl) {
+        // Slide testimonials over the project section as its pin finishes.
+        gsap.set(testimonialsEl, { marginTop: "-100vh", position: "relative", zIndex: 80 });
       }
 
       const curtainTl = gsap.timeline({

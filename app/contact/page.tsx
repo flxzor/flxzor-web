@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import MenuOverlay from "../components/MenuOverlay";
 import Contact from "../sections/Contact";
+import Footer from "../components/Footer";
 
 export default function ContactPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +22,7 @@ export default function ContactPage() {
       <Navbar isMenuOpen={isMenuOpen} onToggleMenu={handleToggleMenu} />
       <MenuOverlay isOpen={isMenuOpen} onClose={handleCloseMenu} />
       <Contact variant="page" />
+      <Footer />
     </>
   );
 }
