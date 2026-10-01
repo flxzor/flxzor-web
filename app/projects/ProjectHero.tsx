@@ -180,6 +180,7 @@ function ProjectCardContent({ project, index }: { project: HygraphProject; index
 export default function ProjectsSection({ projects }: ProjectHeroProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const indexRef = useRef(0);
   const isAnimating = useRef(false);
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -217,28 +218,30 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
     (direction: "next" | "prev" | number) => {
       if (isAnimating.current || projects.length === 0) return;
 
-      let nextIdx = currentIndex;
+      const cur = indexRef.current;
+      let nextIdx = cur;
       if (direction === "next") {
-        if (currentIndex >= projects.length - 1) return;
-        nextIdx = currentIndex + 1;
+        if (cur >= projects.length - 1) return;
+        nextIdx = cur + 1;
       } else if (direction === "prev") {
-        if (currentIndex <= 0) return;
-        nextIdx = currentIndex - 1;
+        if (cur <= 0) return;
+        nextIdx = cur - 1;
       } else {
         nextIdx = direction;
       }
 
-      if (nextIdx === currentIndex) return;
+      if (nextIdx === cur) return;
 
       isAnimating.current = true;
       const isForward =
         direction === "next" ||
-        (typeof direction === "number" && direction > currentIndex);
+        (typeof direction === "number" && direction > cur);
 
-      const currentCard = cardsRef.current[currentIndex];
+      const currentCard = cardsRef.current[cur];
       const nextCard = cardsRef.current[nextIdx];
 
       if (!currentCard || !nextCard) {
+        indexRef.current = nextIdx;
         setCurrentIndex(nextIdx);
         isAnimating.current = false;
         return;
@@ -264,9 +267,13 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
         ".project-card__image, .project-card__button, .project-card__marquee"
       );
 
+      // Update ref immediately so subsequent goTo calls see the new index
+      indexRef.current = nextIdx;
+
       const tl = gsap.timeline({
         onComplete: () => {
           gsap.set(currentCard, { visibility: "hidden" });
+          // Sync React state after GSAP is fully done
           setCurrentIndex(nextIdx);
           isAnimating.current = false;
         },
@@ -328,7 +335,7 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
         0.1
       );
     },
-    [currentIndex, projects.length]
+    [projects.length]
   );
 
   /* ---- Wheel listener ---- */

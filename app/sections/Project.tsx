@@ -39,6 +39,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const bgRef = useRef<HTMLDivElement>(null);
+  const gradientRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -52,7 +53,8 @@ const Project = ({ projects = [] }: ProjectProps) => {
         !captionRef.current ||
         !cardsRef.current ||
         !buttonRef.current ||
-        !bgRef.current
+        !bgRef.current ||
+        !gradientRef.current
       ) {
         return;
       }
@@ -98,6 +100,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
       gsap.set(headingOutlineRef.current, { clipPath: "inset(0% 0% 0% 100%)" });
       gsap.set(captionRef.current, { y: 36, opacity: 0 });
       gsap.set(cardsRef.current, { y: 54, opacity: 0, scale: 0.96 });
+      gsap.set(gradientRef.current, { opacity: 0 });
       gsap.set(buttonRef.current, {
         xPercent: -50,
         yPercent: -50,
@@ -173,6 +176,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
           3.35
         )
         .to(captionRef.current, { y: 0, opacity: 1, duration: 0.85, ease: "power3.out" }, 3.92)
+        .to(gradientRef.current, { opacity: 1, duration: 1.0, ease: "power2.inOut" }, 3.7)
         .to(
           captionRef.current,
           {
@@ -264,7 +268,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
 
       <section ref={sectionRef} id="project" className="relative z-[25] min-h-screen w-full bg-transparent">
         <div ref={bgRef} className="absolute inset-0 z-0 h-full w-full bg-black pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 z-[5] h-[32vh] bg-gradient-to-b from-transparent via-[#003f72]/70 to-[#0b72bd] pointer-events-none" />
+        <div ref={gradientRef} className="absolute inset-x-0 bottom-0 z-[5] h-[32vh] bg-gradient-to-b from-transparent via-[#003f72]/70 to-[#0b72bd] pointer-events-none" />
 
         <div className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-[6vw] pb-[72px] pt-[120px] sm:pb-[90px]">
           <div ref={headingGroupRef} className="flex w-full flex-col items-center justify-center">
