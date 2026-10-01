@@ -1,7 +1,7 @@
 import About from "./sections/About";
 import Hero from "./sections/Hero";
 import Project from "./sections/Project";
-import Contact from "./sections/Contact";
+import Testimonials from "./sections/Testimonials";
 import Footer from "./components/Footer";
 import { getProjects } from "@/lib/hygraph";
 
@@ -22,7 +22,7 @@ export default async function Home() {
 
       <Project projects={projects} />
 
-      <Contact variant="landing" />
+      <Testimonials />
       <Footer />
     </>
   );

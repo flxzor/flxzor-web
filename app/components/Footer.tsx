@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 const EMAIL = "felixerlangga.contact@gmail.com";
@@ -38,7 +40,18 @@ export default function Footer() {
 
           <nav aria-label="Footer navigation" className="site-footer__navigation">
             {navigationLinks.map(({ label, href }) => (
-              <Link href={href} key={label}>{label}</Link>
+              <Link
+                href={href}
+                key={label}
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.dispatchEvent(
+                    new CustomEvent("pageTransitionStart", { detail: { href } })
+                  );
+                }}
+              >
+                {label}
+              </Link>
             ))}
           </nav>
         </div>
@@ -51,7 +64,7 @@ export default function Footer() {
 
       <div className="site-footer__bottom">
         <p><span className="site-footer__status" aria-hidden="true" /> Jakarta, Indonesia <span>GMT+7</span></p>
-        <p>© {new Date().getFullYear()} Felix Erlangga <span>All rights reserved</span></p>
+        <p>© {new Date().getUTCFullYear()} flxzor <span>All rights reserved</span></p>
       </div>
     </footer>
   );
