@@ -21,7 +21,8 @@ export default function Navbar({ isMenuOpen, onToggleMenu, lightOnTop = false }:
       
       if (currentScrollY > lastScrollY) {
         // Scrolling down
-        setIsScrolled(false);
+        // Keep the sticky menu mounted while the navbar slides out of view.
+        setIsScrolled(currentScrollY > 100);
         setIsHidden(true);
       } else if (currentScrollY < lastScrollY && currentScrollY > 100) {
         // Scrolling up past 100px
@@ -57,62 +58,58 @@ export default function Navbar({ isMenuOpen, onToggleMenu, lightOnTop = false }:
   return (
     <nav className={`navbar ${lightOnTop && !isScrolled ? "navbar--light-top" : ""} ${isScrolled ? "navbar--fixed" : ""} ${isHidden && !isMenuOpen ? "navbar--hidden-up" : ""} ${isMenuOpen ? "navbar--menu-open" : ""}`} id="navbar">
       
-      {/* Show default logo and links ONLY when not in the scrolled/sticky state */}
-      {!isScrolled && (
-        <>
-          <Link href="/" className={`navbar__logo ${isMenuOpen ? "navbar__logo--menu-open" : ""}`} onClick={(e) => handleLinkClick(e, "/")}>
-            flxzor
-          </Link>
+      <div className={`navbar__primary-content ${isScrolled ? "navbar__primary-content--morphed" : ""}`}>
+        <Link href="/" className={`navbar__logo ${isMenuOpen ? "navbar__logo--menu-open" : ""}`} onClick={(e) => handleLinkClick(e, "/")}>
+          flxzor
+        </Link>
 
-          {/* Desktop navigation */}
-          <ul className="navbar__links">
-            <li>
-              <a href="/projects" className="navbar__link" onClick={(e) => handleLinkClick(e, "/projects")}>
-                Projects
-              </a>
-            </li>
-            <li>
-              <a href="/blog" className="navbar__link" onClick={(e) => handleLinkClick(e, "/blog")}>
-                Blog
-              </a>
-            </li>
-            <li>
-              <a href="/about" className="navbar__link" onClick={(e) => handleLinkClick(e, "/about")}>
-                About
-              </a>
-            </li>
-          </ul>
+        {/* Desktop navigation */}
+        <ul className="navbar__links">
+          <li>
+            <a href="/projects" className="navbar__link" onClick={(e) => handleLinkClick(e, "/projects")}>
+              Projects
+            </a>
+          </li>
+          <li>
+            <a href="/blog" className="navbar__link" onClick={(e) => handleLinkClick(e, "/blog")}>
+              Blog
+            </a>
+          </li>
+          <li>
+            <a href="/about" className="navbar__link" onClick={(e) => handleLinkClick(e, "/about")}>
+              About
+            </a>
+          </li>
+        </ul>
 
-          {/* Hamburger button (mobile top right) */}
-          <button
-            className={`navbar__hamburger navbar__hamburger--mobile ${isMenuOpen ? "navbar__hamburger--open" : ""}`}
-            onClick={handleToggle}
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isMenuOpen}
-          >
-            <span className="navbar__hamburger-line" />
-            <span className="navbar__hamburger-line" />
-            <span className="navbar__hamburger-line" />
-          </button>
-        </>
-      )}
-
-      {/* Sticky Centered Menu Button */}
-      {isScrolled && (
+        {/* Hamburger button (mobile top right) */}
         <button
-          className="navbar__sticky-menu"
-          onClick={() => onToggleMenu(false)}
+          className={`navbar__hamburger navbar__hamburger--mobile ${isMenuOpen ? "navbar__hamburger--open" : ""}`}
+          onClick={handleToggle}
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMenuOpen}
         >
-          <span className="navbar__sticky-text">{isMenuOpen ? "Close" : "Menu"}</span>
-          <div className={`navbar__hamburger ${isMenuOpen ? "navbar__hamburger--open" : ""}`}>
-            <span className="navbar__hamburger-line" />
-            <span className="navbar__hamburger-line" />
-            <span className="navbar__hamburger-line" />
-          </div>
+          <span className="navbar__hamburger-line" />
+          <span className="navbar__hamburger-line" />
+          <span className="navbar__hamburger-line" />
         </button>
-      )}
+      </div>
+
+      <button
+        className={`navbar__sticky-menu ${isScrolled ? "navbar__sticky-menu--visible" : ""}`}
+        onClick={() => onToggleMenu(false)}
+        aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={isMenuOpen}
+        aria-hidden={!isScrolled}
+        disabled={!isScrolled}
+      >
+        <span className="navbar__sticky-text">{isMenuOpen ? "Close" : "Menu"}</span>
+        <div className={`navbar__hamburger ${isMenuOpen ? "navbar__hamburger--open" : ""}`}>
+          <span className="navbar__hamburger-line" />
+          <span className="navbar__hamburger-line" />
+          <span className="navbar__hamburger-line" />
+        </div>
+      </button>
     </nav>
   );
 }
