@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "../components/Navbar";
 import MenuOverlay from "../components/MenuOverlay";
+import Footer from "../components/Footer";
 import styles from "./about.module.css";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -257,6 +258,7 @@ export default function About() {
   );
 
   return (
+    <>
     <main ref={pageRef} className={styles.page}>
       <Navbar isMenuOpen={isMenuOpen} onToggleMenu={handleToggleMenu} lightOnTop />
       <MenuOverlay isOpen={isMenuOpen} onClose={handleCloseMenu} lightText={menuLightText} />
@@ -399,5 +401,7 @@ export default function About() {
         </div>
       </section>
     </main>
+    <Footer />
+    </>
   );
 }
