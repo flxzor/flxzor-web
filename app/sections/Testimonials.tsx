@@ -16,21 +16,18 @@ const testimonials = [
     name: "Naufal Kafabih Khalwani",
     role: "Mobile developer",
     number: "01",
-    alphabet: "N",
   },
   {
-    quote: "The process felt smooth from the first conversation through the final details.",
-    name: "Project collaborator",
-    role: "Web development",
+    quote: "He always comes up with new ideas, sometimes pretty random lol, but somehow they end up being useful anyway. Once he gets an idea, he just goes for it 🔥🔥🔥",
+    name: "Ananta Puti Maharani",
+    role: "Frontend developer",
     number: "02",
-    alphabet: "P",
   },
   {
     quote: "A reliable partner who cares about both how a product works and how it feels.",
     name: "Project collaborator",
     role: "Product collaboration",
     number: "03",
-    alphabet: "P",
   },
 ];
 
@@ -107,7 +104,7 @@ export default function Testimonials() {
               </div>
               <blockquote>“{testimonial.quote}”</blockquote>
               <div className="testimonial-card__author">
-                <span className="testimonial-card__avatar" aria-hidden="true">{testimonial.alphabet}</span>
+                <span className="testimonial-card__avatar" aria-hidden="true">{testimonial.name.charAt(0)}</span>
                 <span><strong>{testimonial.name}</strong><small>{testimonial.role}</small></span>
               </div>
               </div>
