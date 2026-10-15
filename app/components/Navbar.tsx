@@ -7,9 +7,10 @@ interface NavbarProps {
   isMenuOpen: boolean;
   onToggleMenu: (lightText?: boolean) => void;
   lightOnTop?: boolean;
+  logoHref?: string;
 }
 
-export default function Navbar({ isMenuOpen, onToggleMenu, lightOnTop = false }: NavbarProps) {
+export default function Navbar({ isMenuOpen, onToggleMenu, lightOnTop = false, logoHref = "/" }: NavbarProps) {
   const [isHidden, setIsHidden] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -59,7 +60,7 @@ export default function Navbar({ isMenuOpen, onToggleMenu, lightOnTop = false }:
     <nav className={`navbar ${lightOnTop && !isScrolled ? "navbar--light-top" : ""} ${isScrolled ? "navbar--fixed" : ""} ${isHidden && !isMenuOpen ? "navbar--hidden-up" : ""} ${isMenuOpen ? "navbar--menu-open" : ""}`} id="navbar">
       
       <div className={`navbar__primary-content ${isScrolled ? "navbar__primary-content--morphed" : ""}`}>
-        <Link href="/" className={`navbar__logo ${isMenuOpen ? "navbar__logo--menu-open" : ""}`} onClick={(e) => handleLinkClick(e, "/")}>
+        <Link href={logoHref} className={`navbar__logo ${isMenuOpen ? "navbar__logo--menu-open" : ""}`} onClick={(e) => handleLinkClick(e, logoHref)}>
           flxzor
         </Link>
 
