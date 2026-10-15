@@ -56,6 +56,8 @@ export default function Preloader() {
     }, 0);
 
     const revealSite = () => {
+      containerRef.current?.setAttribute("data-active", "false");
+      window.dispatchEvent(new CustomEvent("pageLoaderRevealStart"));
       // Dispatch immediately so the Hero animation starts playing 
       // while the preloader is sliding up (no delay)
       window.dispatchEvent(new CustomEvent("preloaderComplete"));
@@ -65,7 +67,11 @@ export default function Preloader() {
         yPercent: -100,
         duration: 1.2,
         ease: "power4.inOut",
-        onComplete: () => setIsRevealed(true),
+        onComplete: () => {
+          containerRef.current?.setAttribute("data-active", "false");
+          setIsRevealed(true);
+          window.dispatchEvent(new CustomEvent("pageLoaderComplete"));
+        },
       });
       
       // Also fade out the text
@@ -84,6 +90,8 @@ export default function Preloader() {
   return (
     <div
       ref={containerRef}
+      data-page-preloader
+      data-active="true"
       className="fixed inset-0 z-[9999] flex items-end justify-start bg-[#e0e0e0] overflow-hidden"
     >
       {/* The Blue Progress Bar growing from bottom */}

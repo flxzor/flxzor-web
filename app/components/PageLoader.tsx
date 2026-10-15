@@ -53,6 +53,7 @@ export default function PageLoader() {
       if (!container || !fill || !grayFill) return;
 
       // Reset & show
+      container.setAttribute("data-active", "true");
       gsap.set(container, { display: "flex", yPercent: 0, opacity: 1, pointerEvents: "all" });
       gsap.set(grayFill, { height: "0%" });
       gsap.set(fill, { height: "0%" });
@@ -160,6 +161,8 @@ export default function PageLoader() {
   const revealPage = () => {
     if (!containerRef.current || !isAnimating.current) return;
 
+    containerRef.current.setAttribute("data-active", "false");
+    window.dispatchEvent(new CustomEvent("pageLoaderRevealStart"));
     gsap.to(containerRef.current, {
       yPercent: -100,
       duration: 0.9,
@@ -171,6 +174,7 @@ export default function PageLoader() {
         if (containerRef.current) {
           gsap.set(containerRef.current, { display: "none", yPercent: 0 });
         }
+        window.dispatchEvent(new CustomEvent("pageLoaderComplete"));
 
         if (arrivedAtContact) {
           const colors = ["#2167AB", "#f4bd50", "#f07c70", "#74b88a", "#d998d3", "#ffffff"];
@@ -221,6 +225,8 @@ export default function PageLoader() {
       )}
       <div
         ref={containerRef}
+        data-page-transition-loader
+        data-active="false"
         className="hidden" // Tailwind class for display: none
         style={{
           position: "fixed",
