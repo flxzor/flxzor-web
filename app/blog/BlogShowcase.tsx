@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -8,6 +7,7 @@ import type { BlogPost } from "../../lib/blog";
 import Gallery from "./Gallery";
 import Navbar from "../components/Navbar";
 import MenuOverlay from "../components/MenuOverlay";
+import PageTransitionLink from "../components/PageTransitionLink";
 import { afterPageLoader } from "./page-loader-gate";
 
 gsap.registerPlugin(useGSAP);
@@ -74,11 +74,11 @@ export default function BlogShowcase({ posts, error }: { posts: BlogPost[]; erro
       <Navbar isMenuOpen={isMenuOpen} onToggleMenu={handleToggleMenu} />
       <MenuOverlay isOpen={isMenuOpen} onClose={handleCloseMenu} lightText={menuLightText} />
       {posts.length > 0 ? <Gallery posts={posts} /> : (
-        <section className="blog-empty" aria-live="polite">
-          <span className="blog-empty__number">{error ? "!" : "00"}</span>
+        <section className="blog-empty blog-empty--status" aria-live="polite">
+          <span className="blog-empty__number">{error ? "JOURNAL / OFFLINE" : "JOURNAL / 00"}</span>
           <h2>{error ? "The posts didn’t load." : "Nothing here yet."}</h2>
           <p>{error ? "Please come back in a little while." : "New writing will appear here soon."}</p>
-          <Link href="/">Return home <span aria-hidden="true">→</span></Link>
+          <PageTransitionLink href="/">Return home <span aria-hidden="true">→</span></PageTransitionLink>
         </section>
       )}
     </main>

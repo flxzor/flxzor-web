@@ -197,8 +197,26 @@
 }
 
 .project-card__image-placeholder {
-  color: #0a0a0a;
-  opacity: 0.55;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  color: #fff;
+  background: linear-gradient(180deg, #030507 0%, #061e30 72%, #075992 100%);
+}
+
+.project-card__unavailable-icon {
+  width: clamp(4.5rem, 8vw, 7rem);
+  height: auto;
+}
+
+.project-card__image-placeholder i {
+  position: absolute;
+  inset: 2%;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  pointer-events: none;
 }
 
 /* ---------------------------- Marquee -------------------------------- */

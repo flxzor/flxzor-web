@@ -9,6 +9,7 @@ export interface BlogPost {
 }
 
 type BlogResult = { posts: BlogPost[]; error: boolean };
+type BlogPostResult = { post: BlogPost | null; error: boolean };
 
 const POSTS_QUERY = `
   query BlogPosts {
@@ -71,8 +72,13 @@ export async function getBlogPosts(): Promise<BlogResult> {
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
+  return (await getBlogPostResult(slug)).post;
+}
+
+export async function getBlogPostResult(slug: string): Promise<BlogPostResult> {
   const data = await query<{ posts?: BlogPost[] }>(POST_QUERY, { slug });
-  return data?.posts?.find((post) => post.slug === slug) ?? null;
+  if (!data || !Array.isArray(data.posts)) return { post: null, error: true };
+  return { post: data.posts.find((post) => post.slug === slug) ?? null, error: false };
 }
 
 export function formatBlogDate(value?: string | null): string | null {

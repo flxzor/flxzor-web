@@ -6,7 +6,8 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { HygraphProject } from "@/lib/hygraph";
+import SadFaceIcon from "../components/SadFaceIcon";
+import { COMING_SOON_PROJECT, HygraphProject } from "@/lib/hygraph";
 
 const caveat = Caveat({ subsets: ["latin"], weight: "700", display: "swap" });
 
@@ -27,6 +28,8 @@ interface ProjectProps {
 }
 
 const Project = ({ projects = [] }: ProjectProps) => {
+  const isUnavailable = projects.length === 0;
+  const displayProjects = isUnavailable ? [COMING_SOON_PROJECT] : projects;
   const wrapperRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const panelTopRef = useRef<HTMLDivElement>(null);
@@ -320,7 +323,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
           </div>
 
           <div ref={cardsRef} className="relative mt-0 h-[270px] w-full max-w-[760px] sm:h-[280px]">
-            {projects.map((project, index) => (
+            {displayProjects.map((project, index) => (
               <div
                 key={project.id || index}
                 ref={(node) => {
@@ -339,7 +342,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
                   </div>
                   <div className="relative aspect-[1.12/1] w-full overflow-hidden rounded-sm border border-[#5552a5] bg-[#171923] p-0.5 sm:aspect-[1.55/1] sm:p-1">
                     <div className="relative h-full w-full overflow-hidden bg-[#090b10]">
-                      {project.coverImage?.url && (
+                      {project.coverImage?.url ? (
                         <Image
                           src={project.coverImage.url}
                           alt={project.title}
@@ -347,7 +350,11 @@ const Project = ({ projects = [] }: ProjectProps) => {
                           className="object-cover"
                           sizes="(max-width: 640px) 90vw, 55vw"
                         />
-                      )}
+                      ) : isUnavailable ? (
+                        <div className="absolute inset-0 grid place-items-center overflow-hidden border border-white/80 bg-[linear-gradient(180deg,#030507_0%,#061e30_72%,#075992_100%)]" aria-hidden="true">
+                          <SadFaceIcon className="h-16 w-16 text-white sm:h-20 sm:w-20" />
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -356,7 +363,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
                   style={{ paddingLeft: "16px", paddingRight: "16px" }}
                 >
                   <div className="mb-1 flex items-center justify-between gap-1 font-mono text-[6px] uppercase tracking-wider text-white/50 sm:mb-4 sm:gap-2 sm:text-[9px]">
-                    <span className="text-[#39a9ff]">FEATURED PROJECT / {String(index + 1).padStart(2, "0")}</span>
+                    <span className="text-[#39a9ff]">{isUnavailable ? "FEATURED WORK / UNAVAILABLE" : `FEATURED PROJECT / ${String(index + 1).padStart(2, "0")}`}</span>
                     {project.projectDate && <span>{project.projectDate}</span>}
                   </div>
                   <h3 className="text-[clamp(0.78rem,3.8vw,2.65rem)] font-black leading-[0.95] tracking-tight text-white line-clamp-2 sm:text-[clamp(1.35rem,3.8vw,2.65rem)]">
@@ -368,7 +375,7 @@ const Project = ({ projects = [] }: ProjectProps) => {
                   <div className="mt-1.5 sm:mt-5">
                     <p className="mb-1 hidden font-mono text-[8px] uppercase tracking-widest text-white/45 sm:block">Technology Stack</p>
                     <div className="flex flex-wrap gap-1 sm:gap-1.5">
-                      {project.tech?.slice(0, 4).map((tech) => (
+                      {!isUnavailable && project.tech?.slice(0, 4).map((tech) => (
                         <span key={tech} className="rounded-sm border border-[#277b61]/40 bg-[#153a31] px-1 py-0.5 font-mono text-[6px] text-[#77e2b6] sm:px-2 sm:py-1 sm:text-[9px]">{tech}</span>
                       ))}
                     </div>

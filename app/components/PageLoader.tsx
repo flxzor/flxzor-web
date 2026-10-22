@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import gsap from "gsap";
+import { waitForBlogImages } from "../blog/page-loader-gate";
 
 function resetScrollPosition() {
   document.documentElement.scrollTop = 0;
@@ -146,8 +147,13 @@ export default function PageLoader() {
       safetyTimer.current = null;
     }
 
-    // Small delay so new page renders first
-    setTimeout(() => revealPage(), 250);
+    // Let the route commit, then keep the loader up until its blog images are ready.
+    setTimeout(async () => {
+      if (pathname === "/blog" || pathname.startsWith("/blog/")) {
+        await waitForBlogImages();
+      }
+      if (isAnimating.current && targetHref.current === pathname) revealPage();
+    }, 250);
   }, [pathname]);
 
   useEffect(() => {

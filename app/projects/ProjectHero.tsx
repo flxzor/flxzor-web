@@ -7,7 +7,8 @@ import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
 import Navbar from "../components/Navbar";
 import MenuOverlay from "../components/MenuOverlay";
-import { HygraphProject } from "@/lib/hygraph";
+import SadFaceIcon from "../components/SadFaceIcon";
+import { COMING_SOON_PROJECT, HygraphProject } from "@/lib/hygraph";
 
 gsap.registerPlugin(SplitText);
 
@@ -69,30 +70,15 @@ function Marquee({ text, repeat = 6, animate = true }: { text: string; repeat?: 
 /*  Placeholder icon (shown until a real project image is provided)    */
 /* ------------------------------------------------------------------ */
 
-function ImagePlaceholderIcon() {
-  return (
-    <svg
-      width="64"
-      height="64"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <circle cx="8.5" cy="8.5" r="1.5" />
-      <path d="M21 15l-5-5L5 21" />
-    </svg>
-  );
+function ProjectUnavailableArtwork() {
+  return <div className="project-card__image-placeholder" aria-hidden="true"><SadFaceIcon className="project-card__unavailable-icon" /><i /></div>;
 }
 
 /* ------------------------------------------------------------------ */
 /*  Project card (rendered for current index only)                      */
 /* ------------------------------------------------------------------ */
 
-function ProjectCardContent({ project, index }: { project: HygraphProject; index: number }) {
+function ProjectCardContent({ project, index, unavailable = false }: { project: HygraphProject; index: number; unavailable?: boolean }) {
   return (
     <>
       <div className="overflow-hidden">
@@ -112,9 +98,7 @@ function ProjectCardContent({ project, index }: { project: HygraphProject; index
                 className="project-card__image-img"
               />
             ) : (
-              <div className="project-card__image-placeholder">
-                <ImagePlaceholderIcon />
-              </div>
+              <ProjectUnavailableArtwork />
             )}
           </div>
 
@@ -126,7 +110,9 @@ function ProjectCardContent({ project, index }: { project: HygraphProject; index
         {/* Right: description + actions */}
         <div className="project-card__content">
           <div className="overflow-hidden">
-            {project.projectDate && (
+            {unavailable ? (
+              <p className="project-card__date">Featured work / unavailable</p>
+            ) : project.projectDate && (
               <p className="project-card__date">
                 {new Date(project.projectDate).toLocaleDateString("en-US", {
                   month: "long",
@@ -178,6 +164,8 @@ function ProjectCardContent({ project, index }: { project: HygraphProject; index
 /* ------------------------------------------------------------------ */
 
 export default function ProjectsSection({ projects }: ProjectHeroProps) {
+  const isUnavailable = projects.length === 0;
+  const displayProjects = isUnavailable ? [COMING_SOON_PROJECT] : projects;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const indexRef = useRef(0);
@@ -444,8 +432,6 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
     };
   }, [goTo]);
 
-  const project = projects[currentIndex];
-
   return (
     <>
       <Navbar isMenuOpen={isMenuOpen} onToggleMenu={handleToggleMenu} />
@@ -459,12 +445,12 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
           </span>
           <span className="projects__counter-sep">/</span>
           <span className="projects__counter-total">
-            {String(projects.length).padStart(2, "0")}
+            {String(displayProjects.length).padStart(2, "0")}
           </span>
         </div>
 
         <div className="projects__inner">
-          {projects.map((proj, idx) => (
+          {displayProjects.map((proj, idx) => (
             <div
               key={proj.id || idx}
               ref={(el) => {
@@ -476,13 +462,13 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
                 pointerEvents: idx === currentIndex ? "auto" : "none",
               }}
             >
-              <ProjectCardContent project={proj} index={idx} />
+              <ProjectCardContent project={proj} index={idx} unavailable={isUnavailable} />
             </div>
           ))}
         </div>
 
         {/* Scroll hint */}
-        {currentIndex < projects.length - 1 ? (
+        {projects.length > 0 && (currentIndex < projects.length - 1 ? (
           <div className="projects__scroll-hint">
             <span>Scroll to explore</span>
             <svg
@@ -521,7 +507,7 @@ export default function ProjectsSection({ projects }: ProjectHeroProps) {
               <path d="m19 12-7 7-7-7" />
             </svg>
           </div>
-        )}
+        ))}
       </section>
     </>
   );
