@@ -3,8 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { usePathname } from "next/navigation";
+import { waitForBlogImages } from "../blog/page-loader-gate";
 
 export default function Preloader() {
+  const pathname = usePathname();
   const containerRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
@@ -25,9 +28,13 @@ export default function Preloader() {
     if (isRevealed || !shouldRender) return;
 
     const tl = gsap.timeline({
-      onComplete: () => {
+      onComplete: async () => {
         // Mark as shown in session storage
         sessionStorage.setItem("preloader_shown", "true");
+
+        if (pathname === "/blog" || pathname.startsWith("/blog/")) {
+          await waitForBlogImages();
+        }
         
         // Auto reveal immediately
         revealSite();
@@ -82,7 +89,7 @@ export default function Preloader() {
       });
     };
 
-  }, { scope: containerRef, dependencies: [shouldRender, isRevealed] });
+  }, { scope: containerRef, dependencies: [shouldRender, isRevealed, pathname] });
 
   // Don't render anything until we check sessionStorage to prevent hydration mismatch
   if (!shouldRender || isRevealed) return null;

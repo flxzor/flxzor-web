@@ -12,6 +12,13 @@ export interface HygraphProject {
   isPin?: boolean;
 }
 
+export const COMING_SOON_PROJECT: HygraphProject = {
+  id: "coming-soon",
+  title: "The next project is on its way.",
+  description: "Featured work will appear here when the project collection is available.",
+  tech: ["COMING SOON"],
+};
+
 const PROJECTS_QUERY = `
   query GetProjects {
     projects {
